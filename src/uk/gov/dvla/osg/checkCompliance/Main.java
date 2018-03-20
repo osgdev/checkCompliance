@@ -9,11 +9,6 @@ import java.util.ArrayList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-
 import uk.gov.dvla.osg.common.classes.Customer;
 import uk.gov.dvla.osg.common.config.EnvelopeLookup;
 import uk.gov.dvla.osg.common.config.InsertLookup;
@@ -41,14 +36,14 @@ public class Main {
 	private static String runNo;
 
 	public static void main(String[] args) throws Exception {
-		long start = System.nanoTime();
+		
 		LOGGER.debug("Check Compliance Started");
 		try {
 			// Process args
 			setArgs(args);
 			// Load files
 			LOGGER.debug("Load config file...");
-			AppConfig appConfig = loadPropertiesFile();
+			AppConfig appConfig = new AppConfig(propsFile);
 			LOGGER.debug("Load DPF records...");
 			DpfParser dpf = new DpfParser(inputFile, outputFile, appConfig);
 			ArrayList<Customer> customers = dpf.Load();
@@ -64,7 +59,6 @@ public class Main {
 			cc.calculateDPSCompliance();
 			cc.calculateActualMailProduct();
 			cc.writeComplianceReportFile(appConfig.getMailmarkCompliancePath());
-			System.out.println(cc.getDpsAccuracy());
 			
 			// Check weights and sizes
 			LOGGER.debug("Calculating Weights & Sizes...");
@@ -79,8 +73,7 @@ public class Main {
 			LOGGER.fatal(e.getMessage());
 			System.exit(1);
 		}
-		double seconds = (System.nanoTime() - start) / 1000000000.0;
-		System.out.format("Program execution time : %f \n", Double.valueOf(seconds));
+
 	}
 
 	/**
@@ -99,12 +92,12 @@ public class Main {
 		runNo = args[3];
 	}
 	
-	private static AppConfig loadPropertiesFile() throws Exception {
+/*	private static AppConfig loadPropertiesFile() throws Exception {
 		ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 		// Tell mapper to set private variables
 		mapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
 		return mapper.readValue(new File(propsFile), AppConfig.class);
-	}
+	}*/
 	
 	/**
 	 * Set Production Config using the Selector Lookup file and the selector type that was set in the dpf.

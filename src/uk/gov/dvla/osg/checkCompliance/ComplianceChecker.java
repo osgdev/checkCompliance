@@ -119,7 +119,7 @@ public class ComplianceChecker {
 			maxBadDps = (((double)goodDpsCount / 100) * (double) percentage) -1;
 			compliance = 100 - ( ((double) badDpsCount / (double)goodDpsCount) * 100);
 			LOGGER.info(
-					"Run total={}, total mailsort count={}, \n\tgood DPS count={}, bad DPS count={}, \n\tmaximum permitted default DPS={}, compliance level={} minimum complinace set to {}",
+					"Run total={}, total mailsort count={}, \n\tgood DPS count={}, bad DPS count={}, \n\tmaximum permitted default DPS={}, compliance level={} minimum compliance set to {}",
 					customers.size(), totalMailsortCount, goodDpsCount, badDpsCount, maxBadDps, compliance,
 					ukmMinimumCompliance);
 		} else {

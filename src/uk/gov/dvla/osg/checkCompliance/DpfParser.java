@@ -6,6 +6,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.univocity.parsers.common.processor.ConcurrentRowProcessor;
 import com.univocity.parsers.common.processor.RowListProcessor;
 import com.univocity.parsers.tsv.TsvParser;
@@ -16,7 +19,7 @@ import com.univocity.parsers.tsv.TsvWriterSettings;
 import uk.gov.dvla.osg.common.classes.Customer;
 
 public class DpfParser {
-
+	private static final Logger LOGGER = LogManager.getLogger();
 	//Input variables
 	private String inputFile;
 	private String outputFile;
@@ -89,6 +92,10 @@ public class DpfParser {
 	 * @param customers the amended customer data
 	 * @throws IOException unable to write output file to the supplied path
 	 */
+	/**
+	 * @param customers
+	 * @throws IOException
+	 */
 	public void Save(ArrayList<Customer> customers) throws IOException {
 		try (FileWriter fw = new FileWriter(new File(outputFile))) {
 			// Create an instance of TsvWriter with the default settings
@@ -104,23 +111,85 @@ public class DpfParser {
 				writer.addValues((Object[]) record);
 				// Replace changed values
 				Customer customer = customers.get(counter.getAndIncrement());
-				writer.addValue(appConfig.getJobIdField(), customer.getRpdJid());
-				writer.addValue(appConfig.getSiteField(), customer.getSite());
-				writer.addValue(appConfig.getEogField(), customer.getEog());
-				writer.addValue(appConfig.getSotField(), customer.getSot());
-				writer.addValue(appConfig.getMailMarkBarcodeContent(), customer.getMmBarcodeContent());
-				writer.addValue(appConfig.getSequenceInChild(), customer.getSequenceInChild());
-				writer.addValue(appConfig.getOuterEnvelope(), customer.getEnvelope());
-				writer.addValue(appConfig.getMailingProduct(), customer.getProduct());
-				writer.addValue(appConfig.getBatchTypeField(), customer.getBatchName());
-				writer.addValue(appConfig.getTotalNumberOfPagesInGroupField(), customer.getTotalPagesInGroup());
-				writer.addValue(appConfig.getInsertHopperCodeField(), customer.getInsertRef());
-				writer.addValue(appConfig.getTenDigitJobId(), customer.getTenDigitJid());
-				writer.addValue(appConfig.getMscField(), customer.getMsc());
-				String weightAndSize = customer.getWeight()+"|"+customer.getThickness();
-				writer.addValue(appConfig.getweightAndSizeField(), weightAndSize);
-				writer.addValue(appConfig.getPresentationPriorityField(), customer.getPresentationPriority());
-				writer.addValue(appConfig.getDpsField(), customer.getDps());
+			
+				try {
+					writer.addValue(appConfig.getSiteField(), customer.getSite());
+				} catch (Exception ex) {
+					LOGGER.fatal("Site Field {}", appConfig.getSiteField());
+				}
+				
+				try {
+					writer.addValue(appConfig.getEogField(), customer.getEog());
+				} catch (Exception ex) {
+					LOGGER.fatal("EOG Field {}", appConfig.getEogField());
+				}
+				
+				try {
+					writer.addValue(appConfig.getSotField(), customer.getSot());
+				} catch (Exception ex) {
+					LOGGER.fatal("SOT Field {}", appConfig.getSotField());
+				}
+				
+				try {
+					writer.addValue(appConfig.getMailMarkBarcodeContent(), customer.getMmBarcodeContent());
+				} catch (Exception ex) {
+					LOGGER.fatal("MailMarkBarcodeContent {}", appConfig.getMailMarkBarcodeContent());
+				}
+				
+				try {
+					writer.addValue(appConfig.getSequenceInChild(), customer.getSequenceInChild());
+				} catch (Exception ex) {
+					LOGGER.fatal("Sequence In Child {}", appConfig.getSequenceInChild());
+				}
+				
+				try {
+					writer.addValue(appConfig.getOuterEnvelope(), customer.getEnvelope());
+				} catch (Exception ex) {
+					LOGGER.fatal("Outer Envelope {}", appConfig.getOuterEnvelope());
+				}
+				
+				try {
+					writer.addValue(appConfig.getMailingProduct(), customer.getProduct());
+				} catch (Exception ex) {
+					LOGGER.fatal("Mailing Product {}", appConfig.getMailingProduct());
+				}
+				
+				try {
+					writer.addValue(appConfig.getBatchTypeField(), customer.getBatchName());
+				} catch (Exception ex) {
+					LOGGER.fatal("Batch Type {}", appConfig.getBatchTypeField());
+				}
+				try {
+					writer.addValue(appConfig.getTotalNumberOfPagesInGroupField(), customer.getTotalPagesInGroup());
+				} catch (Exception ex) {
+					LOGGER.fatal("Total Number Of Pages In Group {}", appConfig.getTotalNumberOfPagesInGroupField());
+				}
+				try {
+					writer.addValue(appConfig.getInsertHopperCodeField(), customer.getInsertRef());
+				} catch (Exception ex) {
+					LOGGER.fatal("Insert Hopper Code {}", appConfig.getInsertHopperCodeField());
+				}
+				try {
+					writer.addValue(appConfig.getMscField(), customer.getMsc());
+				} catch (Exception ex) {
+					LOGGER.fatal("MSC {}", appConfig.getMscField());
+				}
+				try {
+					String weightAndSize = customer.getWeight()+"|"+customer.getThickness();
+					writer.addValue(appConfig.getweightAndSizeField(), weightAndSize);
+				} catch (Exception ex) {
+					LOGGER.fatal("Weight & Size {}", appConfig.getweightAndSizeField());
+				}
+				try {
+					writer.addValue(appConfig.getPresentationPriorityField(), customer.getPresentationPriority());
+				} catch (Exception ex) {
+					LOGGER.fatal("Presentation Priority {}", appConfig.getPresentationPriorityField());
+				}
+				try {
+					writer.addValue(appConfig.getDpsField(), customer.getDps());
+				} catch (Exception ex) {
+					LOGGER.fatal("DPS {}", appConfig.getDpsField());
+				}
 				writer.writeValuesToRow();
 			});
 			// Flushes and closes the writer
