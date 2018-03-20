@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -17,6 +18,7 @@ import com.univocity.parsers.tsv.TsvWriter;
 import com.univocity.parsers.tsv.TsvWriterSettings;
 
 import uk.gov.dvla.osg.common.classes.Customer;
+import uk.gov.dvla.osg.common.config.InsertLookup;
 
 public class DpfParser {
 	private static final Logger LOGGER = LogManager.getLogger();
@@ -96,7 +98,7 @@ public class DpfParser {
 	 * @param customers
 	 * @throws IOException
 	 */
-	public void Save(ArrayList<Customer> customers) throws IOException {
+	public void Save(ArrayList<Customer> customers, InsertLookup il) throws IOException {
 		try (FileWriter fw = new FileWriter(new File(outputFile))) {
 			// Create an instance of TsvWriter with the default settings
 			TsvWriter writer = new TsvWriter(fw, new TsvWriterSettings());
@@ -165,7 +167,11 @@ public class DpfParser {
 					LOGGER.fatal("Total Number Of Pages In Group {}", appConfig.getTotalNumberOfPagesInGroupField());
 				}
 				try {
-					writer.addValue(appConfig.getInsertHopperCodeField(), customer.getInsertRef());
+					if (StringUtils.isNotBlank(customer.getInsertRef())) {
+						String insertRef = customer.getInsertRef();
+						int hopperCode = il.getLookup().get(insertRef).getHopperCode();						
+						writer.addValue(appConfig.getInsertHopperCodeField(), hopperCode);
+					}
 				} catch (Exception ex) {
 					LOGGER.fatal("Insert Hopper Code {}", appConfig.getInsertHopperCodeField());
 				}

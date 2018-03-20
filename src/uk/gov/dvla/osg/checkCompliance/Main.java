@@ -68,7 +68,7 @@ public class Main {
 			
 			// save to new file
 			LOGGER.debug("Saving DPF as {}", outputFile);
-			dpf.Save(customers);
+			dpf.Save(customers, insertLookup);
 		} catch (IOException e) {
 			LOGGER.fatal(e.getMessage());
 			System.exit(1);
