@@ -2,7 +2,6 @@ package uk.gov.dvla.osg.checkCompliance;
 
 import static org.apache.commons.lang3.StringUtils.*;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -10,6 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import uk.gov.dvla.osg.common.classes.Customer;
+import uk.gov.dvla.osg.common.classes.Selector;
 import uk.gov.dvla.osg.common.config.EnvelopeLookup;
 import uk.gov.dvla.osg.common.config.InsertLookup;
 import uk.gov.dvla.osg.common.config.PostageConfiguration;
@@ -27,12 +27,6 @@ public class Main {
 	private static String inputFile;
 	private static String outputFile;
 	private static String propsFile;
-	// Config files based on the selector for the batch
-	private static PostageConfiguration postageConfig;
-	private static InsertLookup insertLookup;
-	private static EnvelopeLookup envelopeLookup;
-	private static StationeryLookup stationeryLookup;
-
 	private static String runNo;
 
 	public static void main(String[] args) throws Exception {
@@ -54,7 +48,7 @@ public class Main {
 			setPresentationPriorities(customers);
 			
 			// set batch types
-			ComplianceChecker cc = new ComplianceChecker(customers, postageConfig, runNo);
+			ComplianceChecker cc = new ComplianceChecker(customers, runNo);
 			cc.checkMscGroups();
 			cc.calculateDPSCompliance();
 			cc.calculateActualMailProduct();
@@ -62,13 +56,12 @@ public class Main {
 			
 			// Check weights and sizes
 			LOGGER.debug("Calculating Weights & Sizes...");
-			CalculateWeightsAndSizes cws = new CalculateWeightsAndSizes(customers, insertLookup, envelopeLookup,
-					stationeryLookup);
+			CalculateWeightsAndSizes cws = new CalculateWeightsAndSizes(customers);
 			cws.calculate();
 			
 			// save to new file
 			LOGGER.debug("Saving DPF as {}", outputFile);
-			dpf.Save(customers, insertLookup);
+			dpf.Save(customers);
 		} catch (IOException e) {
 			LOGGER.fatal(e.getMessage());
 			System.exit(1);
@@ -107,34 +100,24 @@ public class Main {
 	 */
 	private static void loadLookupFiles(AppConfig appConfig, ArrayList<Customer> customers) throws IOException {
 
-		String selectorLookupFile = appConfig.getLookupFile();
-		
-
-		if (new File(selectorLookupFile).exists()) {
-
-			SelectorLookup selectorLookup = new SelectorLookup(selectorLookupFile);
-			
-			String selectorRef = getSelectorRef(customers, selectorLookupFile);
-			
-			ProductionConfiguration.init(appConfig.getProductionConfigPath() + selectorLookup.get(selectorRef).getProductionConfig()
+			SelectorLookup.init(appConfig.getLookupFile());
+			Selector selector = SelectorLookup.getInstance().getLookup().get(customers.get(0).getSelectorRef());
+						
+			ProductionConfiguration.init(appConfig.getProductionConfigPath() 
+					+ selector.getProductionConfig()
 					+ appConfig.getProductionFileSuffix());	
 			
-			postageConfig = new PostageConfiguration(appConfig.getPostageConfigPath()
-					+ selectorLookup.get(selectorRef).getPostageConfig() 
+			PostageConfiguration.init(appConfig.getPostageConfigPath()
+					+ selector.getPostageConfig() 
 					+ appConfig.getPostageFileSuffix());
 			
 			PresentationConfiguration.init(appConfig.getPresentationPriorityConfigPath()
-					+ selectorLookup.get(selectorRef).getPresentationConfig()
+					+ selector.getPresentationConfig()
 					+ appConfig.getPresentationPriorityFileSuffix());			
 			
-			insertLookup = new InsertLookup(appConfig.getInsertLookup());
-			stationeryLookup = new StationeryLookup(appConfig.getStationeryLookup());
-			envelopeLookup = new EnvelopeLookup(appConfig.getEnvelopeLookup());
-			
-		} else {
-			LOGGER.fatal("File '{}' doesn't exist.", appConfig.getLookupFile());
-			System.exit(1);
-		}
+			InsertLookup.init(appConfig.getInsertLookup());
+			StationeryLookup.init(appConfig.getStationeryLookup());
+			EnvelopeLookup.init(appConfig.getEnvelopeLookup());
 	}
 
 	/**
@@ -148,20 +131,6 @@ public class Main {
 					: customer.getBatchName() + "_" + customer.getSubBatch();
 			customer.setPresentationPriority(PresentationConfiguration.getInstance().lookupRunOrder(batchComparator));
 		});
-	}
-
-	/**
-	 * Retrieves the selector name from the first row of data
-	 */
-	private static String getSelectorRef(ArrayList<Customer> customers, String selLookupFile) {
-		String selRef = customers.get(0).getSelectorRef();
-		SelectorLookup lookup = new SelectorLookup(selLookupFile);
-		if (lookup.get(selRef) == null) {
-			LOGGER.fatal("The reference '{}' couldn't be found in lookup '{}' for customer with doc ref={}", selRef,
-					selLookupFile, customers.get(0).getDocRef());
-			System.exit(1);
-		}
-		return customers.get(0).getSelectorRef();
 	}
 
 }

@@ -98,7 +98,7 @@ public class DpfParser {
 	 * @param customers
 	 * @throws IOException
 	 */
-	public void Save(ArrayList<Customer> customers, InsertLookup il) throws IOException {
+	public void Save(ArrayList<Customer> customers) throws IOException {
 		try (FileWriter fw = new FileWriter(new File(outputFile))) {
 			// Create an instance of TsvWriter with the default settings
 			TsvWriter writer = new TsvWriter(fw, new TsvWriterSettings());
@@ -169,7 +169,7 @@ public class DpfParser {
 				try {
 					if (StringUtils.isNotBlank(customer.getInsertRef())) {
 						String insertRef = customer.getInsertRef();
-						int hopperCode = il.getLookup().get(insertRef).getHopperCode();						
+						int hopperCode = InsertLookup.getInstance().getLookup().get(insertRef).getHopperCode();						
 						writer.addValue(appConfig.getInsertHopperCodeField(), hopperCode);
 					}
 				} catch (Exception ex) {

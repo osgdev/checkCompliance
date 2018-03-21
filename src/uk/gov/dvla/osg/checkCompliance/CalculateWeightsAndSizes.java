@@ -7,6 +7,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import uk.gov.dvla.osg.common.classes.Customer;
+import uk.gov.dvla.osg.common.classes.Envelope;
+import uk.gov.dvla.osg.common.classes.Insert;
+import uk.gov.dvla.osg.common.classes.Stationery;
 import uk.gov.dvla.osg.common.config.EnvelopeLookup;
 import uk.gov.dvla.osg.common.config.InsertLookup;
 import uk.gov.dvla.osg.common.config.ProductionConfiguration;
@@ -16,9 +19,9 @@ public class CalculateWeightsAndSizes {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	// Input variables
-	HashMap<String, InsertLookup> insertLookup;
-	HashMap<String, EnvelopeLookup> envelopeLookup;
-	private HashMap<String,StationeryLookup> stationeryLookup;
+	HashMap<String, Insert> insertLookup;
+	HashMap<String, Envelope> envelopeLookup;
+	private HashMap<String, Stationery> stationeryLookup;
 	ArrayList<Customer> customers;
 	private String envelopeType;
 	//INSERTS, ENVELOPE, PAPER all in mm
@@ -34,12 +37,11 @@ public class CalculateWeightsAndSizes {
 	
 	private ArrayList<Customer> group = new ArrayList<Customer>();
 
-	public CalculateWeightsAndSizes(ArrayList<Customer> customers, InsertLookup il,	EnvelopeLookup el,
-			StationeryLookup sl) {
-		this.envelopeLookup = el.getLookup();
-		this.insertLookup = il.getLookup();
-		this.stationeryLookup = sl.getLookup();
+	public CalculateWeightsAndSizes(ArrayList<Customer> customers) {
 		this.customers = customers;
+		this.envelopeLookup = EnvelopeLookup.getInstance().getLookup();
+		this.insertLookup = InsertLookup.getInstance().getLookup();
+		this.stationeryLookup = StationeryLookup.getInstance().getLookup();
 		this.envelopeType = ProductionConfiguration.getInstance().getEnvelopeType();
 	}
 

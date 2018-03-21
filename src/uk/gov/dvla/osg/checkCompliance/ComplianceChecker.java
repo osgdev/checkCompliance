@@ -45,17 +45,17 @@ public class ComplianceChecker {
 	private int totalMailsortCount = 0;
 	private PostageConfiguration postConfig;
 
-	public ComplianceChecker(ArrayList<Customer> customers,	PostageConfiguration postConfig, String runNo) {
+	public ComplianceChecker(ArrayList<Customer> customers,	String runNo) {
 		this.runNo = runNo;
 		this.selectorRef = customers.get(0).getSelectorRef();
 		this.customers = customers;
+		
 		this.presentationConfig = PresentationConfiguration.getInstance();
 		this.prodConfig = ProductionConfiguration.getInstance();
-
 		this.mailsortProduct = prodConfig.getMailsortProduct();
 		this.minimumMailSort = prodConfig.getMinimumMailsort();
 
-		this.postConfig = postConfig;
+		this.postConfig = PostageConfiguration.getInstance();
 		this.batchTypesToUkm = postConfig.getUkmBatchTypes();
 		this.ukmMinimumCompliance = postConfig.getUkmMinimumCompliance();
 		this.ukmMinimumTrayVolume = postConfig.getUkmMinimumTrayVolume();
