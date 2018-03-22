@@ -12,13 +12,14 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import uk.gov.dvla.osg.common.classes.BatchType;
 import uk.gov.dvla.osg.common.classes.Customer;
 import uk.gov.dvla.osg.common.classes.Product;
 import uk.gov.dvla.osg.common.config.PostageConfiguration;
@@ -29,10 +30,10 @@ public class ComplianceChecker {
 	private static final Logger LOGGER = LogManager.getLogger();
 	// Input variables
 	private ArrayList<Customer> customers;
+	private final List<BatchType> batchTypesToUkm;
 	private PresentationConfiguration presentationConfig;
 	private ProductionConfiguration prodConfig;
 	private final Product mailsortProduct;
-	private final String batchTypesToUkm;
 	private final int ukmMinimumCompliance;
 	private final int minimumMailSort;
 	private int ukmMinimumTrayVolume;
@@ -47,11 +48,11 @@ public class ComplianceChecker {
 	private int totalMailsortCount = 0;
 	private PostageConfiguration postConfig;
 
-	public ComplianceChecker(ArrayList<Customer> customers,	String runNo) {
+	public ComplianceChecker(ArrayList<Customer> customers, String runNo) {
 		this.runNo = runNo;
 		this.selectorRef = customers.get(0).getSelectorRef();
 		this.customers = customers;
-		
+
 		this.presentationConfig = PresentationConfiguration.getInstance();
 		this.prodConfig = ProductionConfiguration.getInstance();
 		this.mailsortProduct = prodConfig.getMailsortProduct();
@@ -67,20 +68,17 @@ public class ComplianceChecker {
 	 * Check Mailsortcode groups are over the 25 limit, if under change to unsorted
 	 */
 	public void checkMscGroups() {
-		ArrayList<String> mscs = new ArrayList<String>();
-		Set<String> uniqueMscs = new HashSet<String>();
+
 		ArrayList<String> mscsToAdjust = new ArrayList<String>();
 
 		if (!mailsortProduct.equals(Product.UNSORTED)) {
-			customers.forEach(customer -> {
-				if (batchTypesToUkm.contains(customer.getBatchType().name()) && customer.isEog()) {
-					uniqueMscs.add(customer.getLang().name() + customer.getBatchType() + customer.getSubBatch() 
-					+ customer.getMsc());
-					mscs.add(customer.getLang().name() + customer.getBatchType().name() + customer.getSubBatch() + customer.getMsc());
-				}
-			});
 
-			uniqueMscs.forEach(msc -> {
+		List<String> mscs = customers.stream()
+	                     	.filter(c -> batchTypesToUkm.contains(c.getBatchType()) && c.isEog())
+	                     	.map(c -> c.getLang().name() + c.getBatchName() + c.getSubBatch() + c.getMsc())
+	                     	.collect(Collectors.toList());
+			
+		mscs.stream().distinct().forEach(msc -> {
 				int occurrences = Collections.frequency(mscs, msc);
 				if (occurrences < ukmMinimumTrayVolume) {
 					mscsToAdjust.add(msc);
@@ -93,8 +91,8 @@ public class ComplianceChecker {
 			if (mscsToAdjust.size() > 0) {
 				LOGGER.info("Adjusting {} mscs", mscsToAdjust.size());
 				customers.forEach(cus -> {
-					if (mscsToAdjust.contains(cus.getLang().name() + cus.getBatchType().name() 
-					+ cus.getSubBatch() + cus.getMsc())) {
+					if (mscsToAdjust.contains(
+							cus.getLang().name() + cus.getBatchType().name() + cus.getSubBatch() + cus.getMsc())) {
 						cus.updateBatchType(UNSORTED, presentationConfig.lookupRunOrder(UNSORTED));
 						cus.setEog();
 					}
@@ -108,7 +106,7 @@ public class ComplianceChecker {
 
 		if (!mailsortProduct.equals(Product.UNSORTED)) {
 			customers.forEach(cus -> {
-				if (batchTypesToUkm.contains(cus.getBatchType().name())) {
+				if (batchTypesToUkm.contains(cus.getBatchType())) {
 					totalMailsortCount++;
 					if (StringUtils.isEmpty(cus.getDps()) || cus.getDps().equals("9Z")) {
 						badDpsCount++;
@@ -117,13 +115,15 @@ public class ComplianceChecker {
 					}
 				}
 			});
+			
 			int percentage = 100 - ukmMinimumCompliance;
-			maxBadDps = (((double)goodDpsCount / 100) * (double) percentage) -1;
-			compliance = 100 - ( ((double) badDpsCount / (double)goodDpsCount) * 100);
+			maxBadDps = (((double) goodDpsCount / 100) * (double) percentage) - 1;
+			compliance = 100 - (((double) badDpsCount / (double) goodDpsCount) * 100);
 			LOGGER.info(
 					"Run total={}, total mailsort count={}, \n\tgood DPS count={}, bad DPS count={}, \n\tmaximum permitted default DPS={}, compliance level={} minimum compliance set to {}",
 					customers.size(), totalMailsortCount, goodDpsCount, badDpsCount, maxBadDps, compliance,
 					ukmMinimumCompliance);
+		
 		} else {
 			LOGGER.info("Mailsort product set to UNSORTED in config returning 0");
 			compliance = 0f;
@@ -154,10 +154,10 @@ public class ComplianceChecker {
 
 	public void writeComplianceReportFile(String filepath) {
 		LOGGER.trace("Writing Compliance Report to: {}", filepath);
-		
+
 		String dateStamp = new SimpleDateFormat("dd/MM/YY").format(new Date());
 		String compliaceStr = Double.isFinite(compliance) ? String.format("%.4g%n", compliance) : "0";
-		Collection<String> elements = Arrays.asList(runNo, selectorRef, dateStamp , compliaceStr);
+		Collection<String> elements = Arrays.asList(runNo, selectorRef, dateStamp, compliaceStr);
 		String str = String.join(",", elements);
 		LOGGER.trace(str);
 		if (!new File(filepath).exists()) {
@@ -176,16 +176,16 @@ public class ComplianceChecker {
 			System.exit(1);
 		}
 	}
-	
-	public double getDpsAccuracy(){
+
+	public double getDpsAccuracy() {
 		return this.compliance;
 	}
-	
-	public double getMaximumDefaultDps(){
+
+	public double getMaximumDefaultDps() {
 		return this.maxBadDps;
 	}
-	
-	public int getTotalMailsortCount(){
+
+	public int getTotalMailsortCount() {
 		return this.totalMailsortCount;
 	}
 }

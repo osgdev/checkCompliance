@@ -181,7 +181,7 @@ public class DpfParser {
 					LOGGER.fatal("MSC {}", appConfig.getMscField());
 				}
 				try {
-					String weightAndSize = customer.getWeight()+"|"+customer.getThickness();
+					String weightAndSize = customer.getWeight()+"|"+customer.getSize();
 					writer.addValue(appConfig.getweightAndSizeField(), weightAndSize);
 				} catch (Exception ex) {
 					LOGGER.fatal("Weight & Size {}", appConfig.getweightAndSizeField());

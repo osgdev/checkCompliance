@@ -22,8 +22,10 @@ public class CalculateWeightsAndSizes {
 	HashMap<String, Insert> insertLookup;
 	HashMap<String, Envelope> envelopeLookup;
 	private HashMap<String, Stationery> stationeryLookup;
+	
 	ArrayList<Customer> customers;
 	private String envelopeType;
+	
 	//INSERTS, ENVELOPE, PAPER all in mm
 	private double insertSize;
 	private double insertWeight;
@@ -55,11 +57,11 @@ public class CalculateWeightsAndSizes {
 				calcEnvelope();
 				// Paper size & weight
 				calcPaper(customer);
-				// Set total size and total weight - final customer in group includes envelope & inserts
+				// Set totalsize and totalweight - final customer in group includes envelope & inserts
 				calcTotals(customer.isEog());
 				// Set weight and thickness for customer
 				customer.setWeight(totalWeight);
-				customer.setThickness(totalSize);
+				customer.setSize(totalSize);
 				//Calculate total pages in group
 				pageInGroupCount += customer.getNoOfPages();
 				group.add(customer);
