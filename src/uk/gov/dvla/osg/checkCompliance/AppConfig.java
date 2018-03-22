@@ -1,10 +1,18 @@
 package uk.gov.dvla.osg.checkCompliance;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class AppConfig {
+	
+	private static final Logger LOGGER = LogManager.getLogger();
 	
 	private String documentReference, lookupReferenceFieldName, languageFieldName, stationeryFieldName,
 			batchTypeFieldName, subBatchTypeFieldName, fleetNoFieldName, groupIdFieldName, paperSizeFieldName,
@@ -22,10 +30,43 @@ public class AppConfig {
 	private int tenDigitJobIdIncrementValue;
 	private String presentationPriorityField;
 	
-	public AppConfig(String fileName) throws Exception {
+	  /******************************************************************************************
+	  *              SINGLETON PATTERN
+	  ******************************************************************************************/
+	 private static String filename;
+
+	 private static class SingletonHelper {
+	     private static final AppConfig INSTANCE = new AppConfig();
+	 }
+
+	 public static AppConfig getInstance() {
+	     if (StringUtils.isBlank(filename)) {
+	         throw new RuntimeException("Application Configuration not initialised before use");
+	     }
+	     return SingletonHelper.INSTANCE;
+	 }
+
+	 public static void init(String file) throws RuntimeException {
+	     if (StringUtils.isBlank(filename)) {
+	         if (new File(file).isFile()) {
+	             filename = file;
+	         } else {
+	             throw new RuntimeException("Application Configuration File " + filename + " does not exist on filepath.");
+	         }
+	     } else {
+	         throw new RuntimeException("Application Configuration has already been initialised");
+	     }
+	 }
+	 /*****************************************************************************************/
+	 
+	private AppConfig() {
 		Properties prop = new Properties();
-		InputStream input = new FileInputStream(fileName);
-		prop.load(input);
+		try {
+			InputStream input = new FileInputStream(filename);
+			prop.load(input);
+		} catch (IOException ex) {
+			LOGGER.fatal("Unable to load Application Configuration from file - [{}] {}", filename, ex.getMessage());
+		}
 		
 		documentReference = prop.getProperty("documentReference");
 		lookupReferenceFieldName = prop.getProperty("lookupReferenceFieldName");

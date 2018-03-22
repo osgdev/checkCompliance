@@ -35,10 +35,10 @@ public class DpfParser {
 	 * @param outputFile dpf output file
 	 * @param appConfig supplies column names for mapping
 	 */
-	public DpfParser (String inputFile, String outputFile, AppConfig appConfig) {
+	public DpfParser (String inputFile, String outputFile) {
 		this.inputFile = inputFile;
 		this.outputFile = outputFile;
-		this.appConfig = appConfig;
+		this.appConfig = AppConfig.getInstance();
 	}
 	
 	/**

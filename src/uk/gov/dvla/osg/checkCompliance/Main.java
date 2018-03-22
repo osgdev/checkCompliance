@@ -37,12 +37,12 @@ public class Main {
 			setArgs(args);
 			// Load files
 			LOGGER.debug("Load config file...");
-			AppConfig appConfig = new AppConfig(propsFile);
+			AppConfig.init(propsFile);
 			LOGGER.debug("Load DPF records...");
-			DpfParser dpf = new DpfParser(inputFile, outputFile, appConfig);
+			DpfParser dpf = new DpfParser(inputFile, outputFile);
 			ArrayList<Customer> customers = dpf.Load();
 			LOGGER.debug("Load lookup files...");
-			loadLookupFiles(appConfig, customers);
+			loadLookupFiles(customers);
 			// Set presentation priority for all records
 			LOGGER.debug("Set presentation priorities...");
 			setPresentationPriorities(customers);
@@ -52,7 +52,7 @@ public class Main {
 			cc.checkMscGroups();
 			cc.calculateDPSCompliance();
 			cc.calculateActualMailProduct();
-			cc.writeComplianceReportFile(appConfig.getMailmarkCompliancePath());
+			cc.writeComplianceReportFile(AppConfig.getInstance().getMailmarkCompliancePath());
 			
 			// Check weights and sizes
 			LOGGER.debug("Calculating Weights & Sizes...");
@@ -98,9 +98,11 @@ public class Main {
 	 * @param customers
 	 * @throws IOException
 	 */
-	private static void loadLookupFiles(AppConfig appConfig, ArrayList<Customer> customers) throws IOException {
-
-			SelectorLookup.init(appConfig.getLookupFile());
+	private static void loadLookupFiles(ArrayList<Customer> customers) throws IOException {
+			
+			AppConfig appConfig = AppConfig.getInstance();
+			
+			SelectorLookup.init(AppConfig.getInstance().getLookupFile());
 			Selector selector = SelectorLookup.getInstance().getLookup().get(customers.get(0).getSelectorRef());
 						
 			ProductionConfiguration.init(appConfig.getProductionConfigPath() 

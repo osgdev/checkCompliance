@@ -7,7 +7,6 @@ import static uk.gov.dvla.osg.common.classes.Language.*;
 import java.util.ArrayList;
 
 import uk.gov.dvla.osg.common.classes.Customer;
-import uk.gov.dvla.osg.common.classes.Language;
 import uk.gov.dvla.osg.common.classes.Product;
 import uk.gov.dvla.osg.common.config.PostageConfiguration;
 import uk.gov.dvla.osg.common.config.PresentationConfiguration;
@@ -18,29 +17,27 @@ public class ActualMailProduct {
 	ArrayList<Customer> customers;
 	PostageConfiguration postageConfig;
 	ProductionConfiguration productionConfig;
-	private Integer unsortedPriority;
 	// Output variables
 	private Product actualMailProduct;
 
-	public ActualMailProduct(ArrayList<Customer> customers,	PostageConfiguration postageConfig) {
+	public ActualMailProduct(ArrayList<Customer> customers) {
 		this.customers = customers;
+		this.postageConfig = PostageConfiguration.getInstance();
 		this.productionConfig = ProductionConfiguration.getInstance();
-		this.unsortedPriority = PresentationConfiguration.getInstance().lookupRunOrder(UNSORTED);
-		this.postageConfig = postageConfig;
 	}
 
 	public void doUnsorted() {
 		actualMailProduct = Product.UNSORTED;
 		customers.forEach(customer -> {
 			//SET FINAL ENVELOPE
-			if (customer.getLang().equals(Language.E)) {
+			if (customer.getLang().equals(E)) {
 				customer.setEnvelope(productionConfig.getEnvelopeEnglishUnsorted());
 			} else {
 				customer.setEnvelope(productionConfig.getEnvelopeWelshUnsorted());
 			}
 			//CHANGE BATCH TYPE TO UNSORTED FOR ALL SORTED
 			if (customer.getBatchType().equals(SORTED)) {
-				customer.updateBatchType(UNSORTED, unsortedPriority);
+				customer.updateBatchType(UNSORTED, PresentationConfiguration.getInstance().lookupRunOrder(UNSORTED));
 			}
 			customer.setProduct(actualMailProduct);
 		});

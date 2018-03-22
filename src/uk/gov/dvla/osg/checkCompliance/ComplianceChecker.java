@@ -1,5 +1,7 @@
 package uk.gov.dvla.osg.checkCompliance;
 
+import static uk.gov.dvla.osg.common.classes.BatchType.*;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -93,7 +95,7 @@ public class ComplianceChecker {
 				customers.forEach(cus -> {
 					if (mscsToAdjust.contains(cus.getLang().name() + cus.getBatchType().name() 
 					+ cus.getSubBatch() + cus.getMsc())) {
-						cus.updateBatchType("UNSORTED", presentationConfig.lookupRunOrder("UNSORTED"));
+						cus.updateBatchType(UNSORTED, presentationConfig.lookupRunOrder(UNSORTED));
 						cus.setEog();
 					}
 				});
@@ -134,7 +136,7 @@ public class ComplianceChecker {
 	 */
 	public void calculateActualMailProduct() {
 
-		ActualMailProduct amp = new ActualMailProduct(customers, postConfig);
+		ActualMailProduct amp = new ActualMailProduct(customers);
 
 		if (mailsortProduct.equals(Product.UNSORTED) || totalMailsortCount < minimumMailSort) {
 			amp.doUnsorted();
