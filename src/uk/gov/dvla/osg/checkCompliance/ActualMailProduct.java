@@ -64,6 +64,14 @@ public class ActualMailProduct {
 				}
 				customer.setProduct(Product.UNSORTED);
 				break;
+			case UNCODED:
+				if (customer.getLang().equals(E)) {
+					customer.setEnvelope(productionConfig.getEnvelopeEnglishUncoded());
+				} else {
+					customer.setEnvelope(productionConfig.getEnvelopeWelshUncoded());
+				}
+				customer.setProduct(Product.STL);
+				break;					
 			case CLERICAL: case FLEET: case REJECT:
 				customer.setEnvelope("");
 				customer.setProduct("");
@@ -94,6 +102,14 @@ public class ActualMailProduct {
 				}
 				customer.setProduct(Product.UNSORTED);
 				break;
+			case UNCODED:
+				if (customer.getLang().equals(E)) {
+					customer.setEnvelope(productionConfig.getEnvelopeEnglishUncoded());
+				} else {
+					customer.setEnvelope(productionConfig.getEnvelopeWelshUncoded());
+				}
+				customer.setProduct(Product.STL);
+				break;				
 			case CLERICAL: case FLEET: case REJECT:
 				customer.setEnvelope("");
 				customer.setProduct("");
@@ -130,6 +146,14 @@ public class ActualMailProduct {
 				}
 				customer.setProduct(Product.UNSORTED);
 				break;
+			case UNCODED:
+				if (customer.getLang().equals(E)) {
+					customer.setEnvelope(productionConfig.getEnvelopeEnglishUncoded());
+				} else {
+					customer.setEnvelope(productionConfig.getEnvelopeWelshUncoded());
+				}
+				customer.setProduct(Product.STL);
+				break;					
 			case CLERICAL: case FLEET: case REJECT:
 				customer.setEnvelope("");
 				customer.setProduct("");
