@@ -70,7 +70,7 @@ public class ActualMailProduct {
 				} else {
 					customer.setEnvelope(productionConfig.getEnvelopeWelshUncoded());
 				}
-				customer.setProduct(Product.STL);
+				customer.setProduct(Product.RM);
 				break;					
 			case CLERICAL: case FLEET: case REJECT:
 				customer.setEnvelope("");
@@ -108,7 +108,7 @@ public class ActualMailProduct {
 				} else {
 					customer.setEnvelope(productionConfig.getEnvelopeWelshUncoded());
 				}
-				customer.setProduct(Product.STL);
+				customer.setProduct(Product.RM);
 				break;				
 			case CLERICAL: case FLEET: case REJECT:
 				customer.setEnvelope("");
@@ -124,7 +124,7 @@ public class ActualMailProduct {
 		actualMailProduct = Product.MM;
 		customers.forEach(customer -> {
 			//SET DEFAULT DPS IF APPLICABLE
-			if (postageConfig.getUkmBatchTypes().contains(customer.getBatchName()) 
+			if (postageConfig.getUkmBatchTypes().contains(customer.getBatchType()) 
 					&& isBlank(customer.getDps())) {
 				customer.setDps("9Z");
 			}
@@ -152,7 +152,7 @@ public class ActualMailProduct {
 				} else {
 					customer.setEnvelope(productionConfig.getEnvelopeWelshUncoded());
 				}
-				customer.setProduct(Product.STL);
+				customer.setProduct(Product.RM);
 				break;					
 			case CLERICAL: case FLEET: case REJECT:
 				customer.setEnvelope("");
