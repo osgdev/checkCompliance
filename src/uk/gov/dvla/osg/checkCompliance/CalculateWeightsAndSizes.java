@@ -127,6 +127,7 @@ public class CalculateWeightsAndSizes {
 		paperWeight = stationeryLookup.get(cus.getStationery()).getWeight() * cus.getNoOfPages();
 		
 	}
+	
 	/**
 	 * Set weight and thickness for product
 	 * Last customer in group -> add the insert and envelope 
@@ -141,10 +142,5 @@ public class CalculateWeightsAndSizes {
 			totalWeight = paperWeight;
 		}
 	}
-
-
-
-
-
 
 }
