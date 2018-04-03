@@ -10,13 +10,7 @@ import org.apache.logging.log4j.Logger;
 
 import uk.gov.dvla.osg.common.classes.Customer;
 import uk.gov.dvla.osg.common.classes.Selector;
-import uk.gov.dvla.osg.common.config.EnvelopeLookup;
-import uk.gov.dvla.osg.common.config.InsertLookup;
-import uk.gov.dvla.osg.common.config.PostageConfiguration;
-import uk.gov.dvla.osg.common.config.PresentationConfiguration;
-import uk.gov.dvla.osg.common.config.ProductionConfiguration;
-import uk.gov.dvla.osg.common.config.SelectorLookup;
-import uk.gov.dvla.osg.common.config.StationeryLookup;
+import uk.gov.dvla.osg.common.config.*;
 
 public class Main {
 
@@ -120,6 +114,7 @@ public class Main {
 			InsertLookup.init(appConfig.getInsertLookup());
 			StationeryLookup.init(appConfig.getStationeryLookup());
 			EnvelopeLookup.init(appConfig.getEnvelopeLookup());
+			PapersizeLookup.init(appConfig.getPapersizeLookup());
 	}
 
 	/**
