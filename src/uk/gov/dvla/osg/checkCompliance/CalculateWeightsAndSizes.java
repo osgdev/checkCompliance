@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import uk.gov.dvla.osg.common.classes.Customer;
 import uk.gov.dvla.osg.common.classes.Envelope;
 import uk.gov.dvla.osg.common.classes.Insert;
+import uk.gov.dvla.osg.common.classes.Language;
 import uk.gov.dvla.osg.common.classes.PaperSize;
 import uk.gov.dvla.osg.common.classes.Stationery;
 import uk.gov.dvla.osg.common.config.EnvelopeLookup;
@@ -62,10 +63,10 @@ public class CalculateWeightsAndSizes {
 				// Insert size & weight
 				calcInserts(customer);
 				// Envelope size & weight
-				calcEnvelope();
+				calcEnvelope(customer);
 				// Paper size & weight
 				calcPaper(customer);
-				// Set totalsize and totalweight - final customer in group includes envelope & inserts
+				// Set total size and total weight - final customer in group includes envelope & inserts
 				calcTotals(customer.isEog());
 				// Set weight and thickness for customer
 				customer.setWeight(totalWeight);
@@ -102,30 +103,43 @@ public class CalculateWeightsAndSizes {
 		}
 	}
 	
-	private void calcEnvelope() {
-		envelopeSize = envelopeLookup.get(productionConfiguration.getEnvelopeType()).getThickness();
-		envelopeWeight = envelopeLookup.get(productionConfiguration.getEnvelopeType()).getWeight();
+	private void calcEnvelope(Customer customer) {
 		
+		// Added E/W, MP - 04/04
+		if (customer.getLang().equals(Language.E)) {
+			envelopeSize = envelopeLookup.get(productionConfiguration.getEnvelopeEnglishDefault()).getThickness();
+			envelopeWeight = envelopeLookup.get(productionConfiguration.getEnvelopeEnglishDefault()).getWeight();
+		} else {
+			envelopeSize = envelopeLookup.get(productionConfiguration.getEnvelopeWelshDefault()).getThickness();
+			envelopeWeight = envelopeLookup.get(productionConfiguration.getEnvelopeWelshDefault()).getWeight();	
+		}
 	}
 	
-	private void calcPaper(Customer cus) {
+	private void calcPaper(Customer customer) {
 		int divisor = 0;
+		int foldMultiplier = 0;
 		
-		if (paperSizeLookup.containsKey(cus.getPaperSize())) {
-			divisor = (int) paperSizeLookup.get(cus.getPaperSize()).getMultiplier();
+		if (paperSizeLookup.containsKey(customer.getPaperSize())) {
+			divisor = (int) paperSizeLookup.get(customer.getPaperSize()).getMultiplier();
 		}
 		
-		double thickness = stationeryLookup.get(cus.getStationery()).getThickness();
-		int foldMultiplier = envelopeLookup.get(productionConfiguration.getEnvelopeType()).getFoldMultiplier();
+		double thickness = stationeryLookup.get(customer.getStationery()).getThickness();
+		
+		// Added E/W, MP - 04/04
+		if (customer.getLang().equals(Language.E)) {
+			// Could change to customer.getEnvelope() as it is set previously - MP, 04/04
+			foldMultiplier = envelopeLookup.get(productionConfiguration.getEnvelopeEnglishDefault()).getFoldMultiplier();
+		} else {
+			foldMultiplier = envelopeLookup.get(productionConfiguration.getEnvelopeWelshDefault()).getFoldMultiplier();			
+		}
 		
 		if(divisor != 0) {
-			paperSize = (thickness / divisor) * foldMultiplier * cus.getNoOfPages();
+			paperSize = (thickness / divisor) * foldMultiplier * customer.getNoOfPages();
 		} else {
-			paperSize = thickness * foldMultiplier * cus.getNoOfPages();					
+			paperSize = thickness * foldMultiplier * customer.getNoOfPages();					
 		}
 		
-		paperWeight = stationeryLookup.get(cus.getStationery()).getWeight() * cus.getNoOfPages();
-		
+		paperWeight = stationeryLookup.get(customer.getStationery()).getWeight() * customer.getNoOfPages();
 	}
 	
 	/**
