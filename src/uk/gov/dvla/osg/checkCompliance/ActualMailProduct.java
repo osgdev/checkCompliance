@@ -70,7 +70,7 @@ public class ActualMailProduct {
 				} else {
 					customer.setEnvelope(productionConfig.getEnvelopeWelshUncoded());
 				}
-				customer.setProduct(Product.RM);
+				customer.setProduct(Product.UNCODED);
 				break;					
 			case CLERICAL: case FLEET: case REJECT:
 				customer.setEnvelope("");
@@ -108,7 +108,7 @@ public class ActualMailProduct {
 				} else {
 					customer.setEnvelope(productionConfig.getEnvelopeWelshUncoded());
 				}
-				customer.setProduct(Product.RM);
+				customer.setProduct(Product.UNCODED);
 				break;				
 			case CLERICAL: case FLEET: case REJECT:
 				customer.setEnvelope("");
@@ -152,7 +152,7 @@ public class ActualMailProduct {
 				} else {
 					customer.setEnvelope(productionConfig.getEnvelopeWelshUncoded());
 				}
-				customer.setProduct(Product.RM);
+				customer.setProduct(Product.UNCODED);
 				break;					
 			case CLERICAL: case FLEET: case REJECT:
 				customer.setEnvelope("");
