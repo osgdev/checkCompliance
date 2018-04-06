@@ -1,17 +1,12 @@
 package uk.gov.dvla.osg.checkCompliance;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import uk.gov.dvla.osg.common.classes.Customer;
-import uk.gov.dvla.osg.common.classes.Envelope;
-import uk.gov.dvla.osg.common.classes.Insert;
 import uk.gov.dvla.osg.common.classes.Language;
-import uk.gov.dvla.osg.common.classes.PaperSize;
-import uk.gov.dvla.osg.common.classes.Stationery;
 import uk.gov.dvla.osg.common.config.EnvelopeLookup;
 import uk.gov.dvla.osg.common.config.InsertLookup;
 import uk.gov.dvla.osg.common.config.PapersizeLookup;
@@ -22,12 +17,12 @@ public class CalculateWeightsAndSizes {
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	// Input variables
-	HashMap<String, Insert> insertLookup;
-	HashMap<String, Envelope> envelopeLookup;
-	private HashMap<String, Stationery> stationeryLookup;
-	
-	ArrayList<Customer> customers;
-	//private String envelopeType;
+	private InsertLookup insertLookup;
+	private EnvelopeLookup envelopeLookup;
+	private StationeryLookup stationeryLookup;
+	private PapersizeLookup paperSizeLookup;
+	private ProductionConfiguration productionConfiguration;
+	private ArrayList<Customer> customers;
 	
 	//INSERTS, ENVELOPE, PAPER all in mm
 	private double insertSize;
@@ -42,18 +37,13 @@ public class CalculateWeightsAndSizes {
 	
 	private ArrayList<Customer> group = new ArrayList<Customer>();
 
-	private HashMap<String, PaperSize> paperSizeLookup;
-
-	private ProductionConfiguration productionConfiguration;
-
 	public CalculateWeightsAndSizes(ArrayList<Customer> customers) {
 		this.customers = customers;
-		this.envelopeLookup = EnvelopeLookup.getInstance().getLookup();
-		this.insertLookup = InsertLookup.getInstance().getLookup();
-		this.stationeryLookup = StationeryLookup.getInstance().getLookup();
-		this.paperSizeLookup = PapersizeLookup.getInstance().getLookup();
+		this.envelopeLookup = EnvelopeLookup.getInstance();
+		this.insertLookup = InsertLookup.getInstance();
+		this.stationeryLookup = StationeryLookup.getInstance();
+		this.paperSizeLookup = PapersizeLookup.getInstance();
 		this.productionConfiguration = ProductionConfiguration.getInstance();
-		//this.envelopeType = ProductionConfiguration.getInstance().getEnvelopeType();
 	}
 
 	public void calculate() {

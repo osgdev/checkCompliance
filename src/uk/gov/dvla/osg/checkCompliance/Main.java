@@ -97,7 +97,7 @@ public class Main {
 			AppConfig appConfig = AppConfig.getInstance();
 			
 			SelectorLookup.init(AppConfig.getInstance().getLookupFile());
-			Selector selector = SelectorLookup.getInstance().getLookup().get(customers.get(0).getSelectorRef());
+			Selector selector = SelectorLookup.getInstance().get(customers.get(0).getSelectorRef());
 						
 			ProductionConfiguration.init(appConfig.getProductionConfigPath() 
 					+ selector.getProductionConfig()
