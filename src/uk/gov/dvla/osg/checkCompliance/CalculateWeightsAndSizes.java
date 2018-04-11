@@ -63,6 +63,7 @@ public class CalculateWeightsAndSizes {
 				customer.setSize(totalSize);
 				//Calculate total pages in group
 				pageInGroupCount += customer.getNoOfPages();
+				System.out.println(customer.getNoOfPages() + " " + customer.isEog());
 				group.add(customer);
 				calcTotalPagesInGroup(customer.isEog());
 				
@@ -76,6 +77,7 @@ public class CalculateWeightsAndSizes {
 	}
 
 	private void calcTotalPagesInGroup(boolean isEog) {
+		
 		if (isEog) {
 			group.forEach(customer -> customer.setTotalPagesInGroup(pageInGroupCount));
 			pageInGroupCount = 0;
