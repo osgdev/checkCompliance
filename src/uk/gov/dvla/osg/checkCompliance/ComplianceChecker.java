@@ -78,14 +78,14 @@ public class ComplianceChecker {
 	                     	.map(c -> c.getLang().name() + c.getBatchName() + c.getSubBatch() + c.getMsc())
 	                     	.collect(Collectors.toList());
 			
-		mscs.stream().distinct().forEach(msc -> {
-				int occurrences = Collections.frequency(mscs, msc);
-				if (occurrences < ukmMinimumTrayVolume) {
-					mscsToAdjust.add(msc);
-					LOGGER.info("MSC '{}' has only {} items, minimum volume {}", msc, occurrences,
-							ukmMinimumTrayVolume);
-				}
-			});
+				mscs.stream().distinct().forEach(msc -> {
+					int occurrences = Collections.frequency(mscs, msc);
+					if (occurrences < ukmMinimumTrayVolume) {
+						mscsToAdjust.add(msc);
+						LOGGER.info("MSC '{}' has only {} items, minimum volume {}", msc, occurrences,
+									ukmMinimumTrayVolume);
+					}
+				});
 
 			// If below 25 in tray, change to unsorted batch & set EOG
 			if (mscsToAdjust.size() > 0) {
@@ -103,7 +103,6 @@ public class ComplianceChecker {
 
 	//This calculates DPS compliance and the maximum default DPS permitted
 	public void calculateDPSCompliance() {
-
 		if (!mailsortProduct.equals(Product.UNSORTED)) {
 			customers.forEach(cus -> {
 				if (batchTypesToUkm.contains(cus.getBatchType())) {
@@ -135,7 +134,6 @@ public class ComplianceChecker {
 	 * Calculate how we are actually going to send this run, UNSORTED, SORTED via MM, SORTED via OCR
 	 */
 	public void calculateActualMailProduct() {
-
 		ActualMailProduct amp = new ActualMailProduct(customers);
 
 		if (mailsortProduct.equals(Product.UNSORTED) || totalMailsortCount < minimumMailSort) {

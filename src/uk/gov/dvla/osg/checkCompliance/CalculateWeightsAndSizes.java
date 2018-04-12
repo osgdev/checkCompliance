@@ -33,9 +33,9 @@ public class CalculateWeightsAndSizes {
 	private double envelopeWeight;
 	private double totalSize;
 	private double totalWeight;
-	private int pageInGroupCount;
+	//private int pageInGroupCount;
 	
-	private ArrayList<Customer> group = new ArrayList<Customer>();
+	//private ArrayList<Customer> group = new ArrayList<Customer>();
 
 	public CalculateWeightsAndSizes(ArrayList<Customer> customers) {
 		this.customers = customers;
@@ -62,10 +62,10 @@ public class CalculateWeightsAndSizes {
 				customer.setWeight(totalWeight);
 				customer.setSize(totalSize);
 				//Calculate total pages in group
-				pageInGroupCount += customer.getNoOfPages();
-				System.out.println(customer.getNoOfPages() + " " + customer.isEog());
-				group.add(customer);
-				calcTotalPagesInGroup(customer.isEog());
+				//pageInGroupCount += customer.getNoOfPages();
+
+				//group.add(customer);
+				//calcTotalPagesInGroup(customer.isEog());
 				
 			} catch (NullPointerException e) {
 				LOGGER.fatal("Looking up insert '{}', stationery '{}'", customer.getInsertRef(),
@@ -76,14 +76,17 @@ public class CalculateWeightsAndSizes {
 		}
 	}
 
-	private void calcTotalPagesInGroup(boolean isEog) {
+/*	private void calcTotalPagesInGroup(boolean isEog) {
 		
 		if (isEog) {
-			group.forEach(customer -> customer.setTotalPagesInGroup(pageInGroupCount));
+			group.forEach(customer -> { 
+				customer.setTotalPagesInGroup(pageInGroupCount);
+				LOGGER.debug("{} {} {} {}", customer.getBatchName(), customer.getTotalPagesInGroup(), customer.getTenDigitJid(), customer.getSequenceInChild());
+			});
 			pageInGroupCount = 0;
 			group.clear();
 		}
-	}
+	}*/
 
 	private void calcInserts(Customer customer) {
 		if (!customer.getInsertRef().isEmpty()) {

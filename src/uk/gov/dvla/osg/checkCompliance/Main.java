@@ -5,6 +5,7 @@ import static org.apache.commons.lang3.StringUtils.*;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -56,11 +57,10 @@ public class Main {
 			// save to new file
 			LOGGER.debug("Saving DPF as {}", outputFile);
 			dpf.Save(customers);
-		} catch (IOException e) {
-			LOGGER.fatal(e.getMessage());
+		} catch (Exception ex) {
+			LOGGER.fatal(ExceptionUtils.getStackTrace(ex));
 			System.exit(1);
 		}
-
 	}
 
 	/**
