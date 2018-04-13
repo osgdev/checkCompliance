@@ -33,9 +33,6 @@ public class CalculateWeightsAndSizes {
 	private double envelopeWeight;
 	private double totalSize;
 	private double totalWeight;
-	//private int pageInGroupCount;
-	
-	//private ArrayList<Customer> group = new ArrayList<Customer>();
 
 	public CalculateWeightsAndSizes(ArrayList<Customer> customers) {
 		this.customers = customers;
@@ -61,32 +58,12 @@ public class CalculateWeightsAndSizes {
 				// Set weight and thickness for customer
 				customer.setWeight(totalWeight);
 				customer.setSize(totalSize);
-				//Calculate total pages in group
-				//pageInGroupCount += customer.getNoOfPages();
-
-				//group.add(customer);
-				//calcTotalPagesInGroup(customer.isEog());
-				
-			} catch (NullPointerException e) {
-				LOGGER.fatal("Looking up insert '{}', stationery '{}'", customer.getInsertRef(),
-						customer.getStationery());
+			} catch (Exception e) {
 				LOGGER.fatal("Envelope, Insert or Stationery lookup failed: '{}'", e.getMessage());
 				System.exit(1);
 			}
 		}
 	}
-
-/*	private void calcTotalPagesInGroup(boolean isEog) {
-		
-		if (isEog) {
-			group.forEach(customer -> { 
-				customer.setTotalPagesInGroup(pageInGroupCount);
-				LOGGER.debug("{} {} {} {}", customer.getBatchName(), customer.getTotalPagesInGroup(), customer.getTenDigitJid(), customer.getSequenceInChild());
-			});
-			pageInGroupCount = 0;
-			group.clear();
-		}
-	}*/
 
 	private void calcInserts(Customer customer) {
 		if (!customer.getInsertRef().isEmpty()) {
@@ -123,6 +100,9 @@ public class CalculateWeightsAndSizes {
 		// Added E/W, MP - 04/04
 		if (customer.getLang().equals(Language.E)) {
 			// Could change to customer.getEnvelope() as it is set previously - MP, 04/04
+			// Checking if above is feasable - PB, 13/04
+			//LOGGER.debug("Prod: {}, Cust: {}, Match: {}, BT {}", productionConfiguration.getEnvelopeEnglishDefault(), customer.getEnvelope(), productionConfiguration.getEnvelopeEnglishDefault().equals(customer.getEnvelope()), customer.getBatchName());
+			//LOGGER.debug("{} | {}", envelopeLookup.get(productionConfiguration.getEnvelopeEnglishDefault()).getFoldMultiplier(), envelopeLookup.get(customer.getEnvelope()).getFoldMultiplier());
 			foldMultiplier = envelopeLookup.get(productionConfiguration.getEnvelopeEnglishDefault()).getFoldMultiplier();
 		} else {
 			foldMultiplier = envelopeLookup.get(productionConfiguration.getEnvelopeWelshDefault()).getFoldMultiplier();			
