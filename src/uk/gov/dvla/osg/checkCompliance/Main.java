@@ -31,15 +31,15 @@ public class Main {
 			// Process args
 			setArgs(args);
 			// Load files
-			LOGGER.debug("Load config file...");
+			LOGGER.trace("Load config file...");
 			AppConfig.init(propsFile);
-			LOGGER.debug("Load DPF records...");
+			LOGGER.trace("Load DPF records...");
 			DpfParser dpf = new DpfParser(inputFile, outputFile);
 			ArrayList<Customer> customers = dpf.Load();
-			LOGGER.debug("Load lookup files...");
+			LOGGER.trace("Load lookup files...");
 			loadLookupFiles(customers);
 			// Set presentation priority for all records
-			LOGGER.debug("Set presentation priorities...");
+			LOGGER.trace("Set presentation priorities...");
 			setPresentationPriorities(customers);
 			
 			// set batch types
@@ -50,7 +50,7 @@ public class Main {
 			cc.writeComplianceReportFile(AppConfig.getInstance().getMailmarkCompliancePath());
 			
 			// Check weights and sizes
-			LOGGER.debug("Calculating Weights & Sizes...");
+			LOGGER.trace("Calculating Weights & Sizes...");
 			CalculateWeightsAndSizes cws = new CalculateWeightsAndSizes(customers);
 			cws.calculate();
 			
