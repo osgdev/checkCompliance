@@ -42,7 +42,7 @@ public class Main {
 			LOGGER.trace("Set presentation priorities...");
 			setPresentationPriorities(customers);
 			
-			// set batch types
+			// set product types
 			ComplianceChecker cc = new ComplianceChecker(customers, runNo);
 			cc.checkMscGroups();
 			cc.calculateDPSCompliance();
@@ -118,7 +118,9 @@ public class Main {
 	}
 
 	/**
-	 * Sets the presentation priority for each customer. Looks up the batch type in the configuration file and returns the sequence number. If batch type is not present the priority is set to 999.
+	 * Sets the presentation priority for each customer. 
+	 * Looks up the batch type in the configuration file and returns the sequence number. 
+	 * If batch type is not present the priority is set to 999.
 	 * @param customers
 	 */
 	private static void setPresentationPriorities(ArrayList<Customer> customers) {
@@ -129,5 +131,4 @@ public class Main {
 			customer.setPresentationPriority(PresentationConfiguration.getInstance().lookupRunOrder(batchComparator));
 		});
 	}
-
 }

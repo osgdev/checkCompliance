@@ -125,7 +125,7 @@ public class ComplianceChecker {
 		
 		} else {
 			LOGGER.info("Mailsort product set to UNSORTED in config returning 0");
-			compliance = 0f;
+			compliance = 0;
 			maxBadDps = 0;
 		}
 	}
@@ -155,7 +155,7 @@ public class ComplianceChecker {
 
 		String dateStamp = new SimpleDateFormat("dd/MM/YY").format(new Date());
 		//Wrapped "0" in String.format() - PB 13/04
-		String compliaceStr = Double.isFinite(compliance) ? String.format("%.4g%n", compliance) : String.format("%.4g%n", 0);
+		String compliaceStr = Double.isFinite(compliance) ? String.format("%.4g%n", compliance) : String.format("%d%n", 0);
 		Collection<String> elements = Arrays.asList(runNo, selectorRef, dateStamp, compliaceStr);
 		String str = String.join(",", elements);
 		LOGGER.trace(str.trim());
