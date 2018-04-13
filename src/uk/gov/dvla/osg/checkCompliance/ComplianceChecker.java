@@ -154,7 +154,8 @@ public class ComplianceChecker {
 		LOGGER.trace("Writing Compliance Report to: {}", filepath);
 
 		String dateStamp = new SimpleDateFormat("dd/MM/YY").format(new Date());
-		String compliaceStr = Double.isFinite(compliance) ? String.format("%.4g%n", compliance) : "0";
+		//Wrapped "0" in String.format() - PB 13/04
+		String compliaceStr = Double.isFinite(compliance) ? String.format("%.4g%n", compliance) : String.format("%.4g%n", 0);
 		Collection<String> elements = Arrays.asList(runNo, selectorRef, dateStamp, compliaceStr);
 		String str = String.join(",", elements);
 		LOGGER.trace(str);
@@ -168,7 +169,7 @@ public class ComplianceChecker {
 		}
 
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter(new File(filepath).getAbsoluteFile(), true))) {
-			bw.write(str + System.getProperty("line.separator"));
+			bw.write(str);
 		} catch (IOException e) {
 			LOGGER.fatal("Unable to create compliance report file {}", filepath);
 			System.exit(1);
