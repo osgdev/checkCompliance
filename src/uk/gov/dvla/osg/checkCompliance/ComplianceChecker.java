@@ -158,7 +158,7 @@ public class ComplianceChecker {
 		String compliaceStr = Double.isFinite(compliance) ? String.format("%.4g%n", compliance) : String.format("%.4g%n", 0);
 		Collection<String> elements = Arrays.asList(runNo, selectorRef, dateStamp, compliaceStr);
 		String str = String.join(",", elements);
-		LOGGER.trace(str);
+		LOGGER.trace(str.trim());
 		if (!new File(filepath).exists()) {
 			try {
 				new File(filepath).createNewFile();
