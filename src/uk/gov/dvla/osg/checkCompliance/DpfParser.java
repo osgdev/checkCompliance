@@ -56,7 +56,7 @@ public class DpfParser {
 			Customer customer = new Customer(counter.getAndIncrement());
 			customer.setDocRef(record.getString(appConfig.getDocumentReference()));
 			customer.setSortField(record.getString(appConfig.getSortField()));
-			customer.setSelectorRef(record.getString(appConfig.getAppNameField()));
+			customer.setSelectorRef(record.getString(appConfig.getLookupReferenceField()));
 			customer.setLang(record.getString(appConfig.getLanguageField()));
 			customer.setStationery(record.getString(appConfig.getStationeryField()));
 			customer.setBatchType(record.getString(appConfig.getBatchTypeField()));

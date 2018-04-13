@@ -168,7 +168,7 @@ public class ComplianceChecker {
 		}
 
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter(new File(filepath).getAbsoluteFile(), true))) {
-			bw.write(str);
+			bw.write(str + System.getProperty("line.separator"));
 		} catch (IOException e) {
 			LOGGER.fatal("Unable to create compliance report file {}", filepath);
 			System.exit(1);
