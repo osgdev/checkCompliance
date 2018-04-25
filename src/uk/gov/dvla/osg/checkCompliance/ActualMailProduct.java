@@ -6,6 +6,7 @@ import static uk.gov.dvla.osg.common.classes.Language.*;
 
 import java.util.ArrayList;
 
+import uk.gov.dvla.osg.common.classes.BatchType;
 import uk.gov.dvla.osg.common.classes.Customer;
 import uk.gov.dvla.osg.common.classes.Product;
 import uk.gov.dvla.osg.common.config.PostageConfiguration;
@@ -36,7 +37,7 @@ public class ActualMailProduct {
 				customer.setEnvelope(productionConfig.getEnvelopeWelshUnsorted());
 			}
 			//CHANGE BATCH TYPE TO UNSORTED FOR ALL SORTED
-			if (customer.getBatchType().equals(SORTED)) {
+			if (BatchType.UNSORTED.equals(customer.getBatchType())) {
 				customer.updateBatchType(UNSORTED, PresentationConfiguration.getInstance().lookupRunOrder(UNSORTED));
 			}
 			customer.setProduct(actualMailProduct);
