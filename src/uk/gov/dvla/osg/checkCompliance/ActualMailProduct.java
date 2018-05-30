@@ -1,11 +1,11 @@
 package uk.gov.dvla.osg.checkCompliance;
 
 import static org.apache.commons.lang3.StringUtils.*;
-import static uk.gov.dvla.osg.common.classes.BatchType.*;
 import static uk.gov.dvla.osg.common.classes.Language.*;
 
 import java.util.ArrayList;
 
+import uk.gov.dvla.osg.common.classes.BatchType;
 import uk.gov.dvla.osg.common.classes.Customer;
 import uk.gov.dvla.osg.common.classes.Product;
 import uk.gov.dvla.osg.common.config.PostageConfiguration;
@@ -27,7 +27,7 @@ public class ActualMailProduct {
 	}
 
 	public void doUnsorted() {
-		actualMailProduct = Product.UNSORTED;
+	    actualMailProduct = Product.UNSORTED;
 		customers.forEach(customer -> {
 			//SET FINAL ENVELOPE
 			if (customer.getLang().equals(E)) {
@@ -37,9 +37,14 @@ public class ActualMailProduct {
 			}
 			//CHANGE BATCH TYPE TO UNSORTED FOR ALL SORTED AND MULTIS - PB 30/04
 			if (postageConfig.getUkmBatchTypes().contains(customer.getBatchType())) {
-				customer.updateBatchType(UNSORTED, PresentationConfiguration.getInstance().lookupRunOrder(UNSORTED));
+				customer.updateBatchType(BatchType.UNSORTED, PresentationConfiguration.getInstance().lookupRunOrder(BatchType.UNSORTED));
 			}
-			customer.setProduct(actualMailProduct);
+			customer.setProduct(Product.UNSORTED);
+ 			
+			//Product type set to UNCODED when batchtype is UNCODED
+			if (BatchType.UNCODED.equals(customer.getBatchType())) {
+			    customer.setProduct(Product.UNCODED);
+			}
 		});
 	}
 

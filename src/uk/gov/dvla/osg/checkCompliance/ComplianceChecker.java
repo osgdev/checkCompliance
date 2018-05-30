@@ -82,8 +82,7 @@ public class ComplianceChecker {
 					int occurrences = Collections.frequency(mscs, msc);
 					if (occurrences < ukmMinimumTrayVolume) {
 						mscsToAdjust.add(msc);
-						LOGGER.info("MSC '{}' has only {} items, minimum volume {}", msc, occurrences,
-									ukmMinimumTrayVolume);
+						LOGGER.info("MSC '{}' has only {} items, minimum volume {}", msc, occurrences, ukmMinimumTrayVolume);
 					}
 				});
 

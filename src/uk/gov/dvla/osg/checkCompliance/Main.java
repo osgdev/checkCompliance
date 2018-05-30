@@ -4,6 +4,8 @@ import static org.apache.commons.lang3.StringUtils.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
@@ -26,7 +28,7 @@ public class Main {
 
 	public static void main(String[] args) throws Exception {
 		
-		LOGGER.debug("Check Compliance Started");
+		LOGGER.debug("---- Check Compliance Started ----");
 		try {
 			// Process args
 			setArgs(args);
@@ -57,10 +59,13 @@ public class Main {
 			// save to new file
 			LOGGER.debug("Saving DPF as {}", outputFile);
 			dpf.Save(customers);
+            String summary = summaryPrint(customers);
+            LOGGER.debug(summary);
 		} catch (Exception ex) {
 			LOGGER.fatal(ExceptionUtils.getStackTrace(ex));
 			System.exit(1);
-		}
+		} 
+		    LOGGER.debug("---- Check Compliance Finished ----");
 	}
 
 	/**
@@ -74,8 +79,11 @@ public class Main {
 			System.exit(1);
 		}
 		inputFile = args[0];
+		//TODO: validate input file
 		outputFile = args[1];
+		//TODO: check can save output file
 		propsFile = args[2];
+		//TODO: validate properties file
 		runNo = args[3];
 	}
 	
@@ -131,4 +139,15 @@ public class Main {
 			customer.setPresentationPriority(PresentationConfiguration.getInstance().lookupRunOrder(batchComparator));
 		});
 	}
+	
+    /**
+     * Prints a summary of the number of items for each batch type.
+     * @param docProps
+     */
+     private static String summaryPrint(ArrayList<Customer> customers) {
+         Map<String, Long> counting = customers.stream().collect(
+                 Collectors.groupingBy(Customer::getFullBatchName, Collectors.counting()));
+
+         return counting.toString();
+     }
 }
