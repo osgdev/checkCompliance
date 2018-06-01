@@ -85,14 +85,8 @@ public class Main {
 		propsFile = args[2];
 		//TODO: validate properties file
 		runNo = args[3];
+		
 	}
-	
-/*	private static AppConfig loadPropertiesFile() throws Exception {
-		ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-		// Tell mapper to set private variables
-		mapper.setVisibility(PropertyAccessor.FIELD, Visibility.ANY);
-		return mapper.readValue(new File(propsFile), AppConfig.class);
-	}*/
 	
 	/**
 	 * Set Production Config using the Selector Lookup file and the selector type that was set in the dpf.
