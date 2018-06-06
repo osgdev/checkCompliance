@@ -153,7 +153,7 @@ public class DpfParser {
 				try {
 					writer.addValue(appConfig.getMailingProduct(), customer.getProduct());
 				} catch (Exception ex) {
-					LOGGER.fatal("Mailing Product {}", appConfig.getMailingProduct());
+					LOGGER.fatal("Mailing Product {} : BatchType {}", appConfig.getMailingProduct(), customer.getBatchName());
 				}
 				
 				try {

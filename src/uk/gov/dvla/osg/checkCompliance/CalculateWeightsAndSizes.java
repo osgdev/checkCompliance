@@ -95,14 +95,11 @@ public class CalculateWeightsAndSizes {
 			divisor = (int) paperSizeLookup.get(customer.getPaperSize()).getMultiplier();
 		}
 		
-		double thickness = stationeryLookup.get(customer.getStationery()).getThickness();
+		double thickness = stationeryLookup.getStationery(customer.getStationery()).getThickness();
 		
 		// Added E/W, MP - 04/04
 		if (customer.getLang().equals(Language.E)) {
 			// Could change to customer.getEnvelope() as it is set previously - MP, 04/04
-			// Checking if above is feasable - PB, 13/04
-			//LOGGER.debug("Prod: {}, Cust: {}, Match: {}, BT {}", productionConfiguration.getEnvelopeEnglishDefault(), customer.getEnvelope(), productionConfiguration.getEnvelopeEnglishDefault().equals(customer.getEnvelope()), customer.getBatchName());
-			//LOGGER.debug("{} | {}", envelopeLookup.get(productionConfiguration.getEnvelopeEnglishDefault()).getFoldMultiplier(), envelopeLookup.get(customer.getEnvelope()).getFoldMultiplier());
 			foldMultiplier = envelopeLookup.get(productionConfiguration.getEnvelopeEnglishDefault()).getFoldMultiplier();
 		} else {
 			foldMultiplier = envelopeLookup.get(productionConfiguration.getEnvelopeWelshDefault()).getFoldMultiplier();			
@@ -114,7 +111,7 @@ public class CalculateWeightsAndSizes {
 			paperSize = thickness * foldMultiplier * customer.getNoOfPages();					
 		}
 		
-		paperWeight = stationeryLookup.get(customer.getStationery()).getWeight() * customer.getNoOfPages();
+		paperWeight = stationeryLookup.getStationery(customer.getStationery()).getWeight() * customer.getNoOfPages();
 	}
 	
 	/**

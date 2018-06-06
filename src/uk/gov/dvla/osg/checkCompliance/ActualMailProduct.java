@@ -29,22 +29,42 @@ public class ActualMailProduct {
 	public void doUnsorted() {
 	    actualMailProduct = Product.UNSORTED;
 		customers.forEach(customer -> {
-			//SET FINAL ENVELOPE
-			if (customer.getLang().equals(E)) {
-				customer.setEnvelope(productionConfig.getEnvelopeEnglishUnsorted());
-			} else {
-				customer.setEnvelope(productionConfig.getEnvelopeWelshUnsorted());
-			}
-			//CHANGE BATCH TYPE TO UNSORTED FOR ALL SORTED AND MULTIS - PB 30/04
-			if (postageConfig.getUkmBatchTypes().contains(customer.getBatchType())) {
-				customer.updateBatchType(BatchType.UNSORTED, PresentationConfiguration.getInstance().lookupRunOrder(BatchType.UNSORTED));
-			}
-			customer.setProduct(Product.UNSORTED);
- 			
-			//Product type set to UNCODED when batchtype is UNCODED
-			if (BatchType.UNCODED.equals(customer.getBatchType())) {
-			    customer.setProduct(Product.UNCODED);
-			}
+		    
+		    switch (customer.getBatchType()) {
+            case UNSORTED:
+                if (customer.getLang().equals(E)) {
+                    customer.setEnvelope(productionConfig.getEnvelopeEnglishUnsorted());
+                } else {
+                    customer.setEnvelope(productionConfig.getEnvelopeWelshUnsorted());
+                }
+                customer.setProduct(Product.UNSORTED);
+                break;
+		    case SORTED: case MULTI:
+		        customer.updateBatchType(BatchType.UNSORTED, PresentationConfiguration.getInstance().lookupRunOrder(BatchType.UNSORTED));
+	            if (customer.getLang().equals(E)) {
+	                customer.setEnvelope(productionConfig.getEnvelopeEnglishUnsorted());
+	            } else {
+	                customer.setEnvelope(productionConfig.getEnvelopeWelshUnsorted());
+	            }
+	            customer.setProduct(Product.UNSORTED);
+                break;
+            case UNCODED:
+                if (customer.getLang().equals(E)) {
+                    customer.setEnvelope(productionConfig.getEnvelopeEnglishUncoded());
+                } else {
+                    customer.setEnvelope(productionConfig.getEnvelopeWelshUncoded());
+                }
+                customer.setProduct(Product.UNCODED);
+                break;
+            case CLERICAL: case FLEET: case REJECT:
+                customer.setEnvelope("");
+                customer.setProduct("");
+                break;
+            case REPRINT: case SORTING:
+                break;
+            default:
+                break;
+		    }
 		});
 	}
 

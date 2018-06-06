@@ -2,11 +2,12 @@ package uk.gov.dvla.osg.checkCompliance;
 
 import static org.apache.commons.lang3.StringUtils.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -39,7 +40,8 @@ public class Main {
 			DpfParser dpf = new DpfParser(inputFile, outputFile);
 			ArrayList<Customer> customers = dpf.Load();
 			LOGGER.trace("Load lookup files...");
-			loadLookupFiles(customers);
+			String selRef = customers.get(0).getSelectorRef();
+            loadLookupFiles(selRef);
 			// Set presentation priority for all records
 			LOGGER.trace("Set presentation priorities...");
 			setPresentationPriorities(customers);
@@ -75,16 +77,44 @@ public class Main {
 	private static void setArgs(String[] args) {
 
 		if (args.length != EXPECTED_NUMBER_OF_ARGS) {
-			LOGGER.fatal("Incorrect number of args parsed {} expected {}", args.length, EXPECTED_NUMBER_OF_ARGS);
+		    LOGGER.fatal(
+                    "Incorrect number of args parsed '{}' expecting '{}'. "
+                    + "Args are "
+                    + "1. Props file, "
+                    + "2. Input file, "
+                    + "3. Output file, "
+                    + "4. Run No",
+                    args.length, EXPECTED_NUMBER_OF_ARGS);
 			System.exit(1);
 		}
-		inputFile = args[0];
-		//TODO: validate input file
-		outputFile = args[1];
-		//TODO: check can save output file
-		propsFile = args[2];
-		//TODO: validate properties file
-		runNo = args[3];
+		
+        inputFile = args[0];
+        boolean inputFileExists = new File(inputFile).exists();
+        if (!inputFileExists) {
+            LOGGER.fatal("Input File [{}] doesn't exist on the filepath.", inputFile);
+            System.exit(1);
+        }
+		
+        outputFile = args[1];
+/*        boolean writable = new File(outputFile).canWrite();
+        if (!writable) {
+            LOGGER.fatal("Unable to write output file [{}] to disk.", outputFile);
+            System.exit(1);
+        }*/
+		
+        propsFile = args[2];
+        boolean propsFileExists = new File(propsFile).exists();
+        if (!propsFileExists) {
+            LOGGER.fatal("Properties File [{}] doesn't exist on the filepath.", propsFile);
+            System.exit(1);
+        }
+        
+        runNo = args[3];
+        boolean runNoIsNumeric = StringUtils.isNumeric(runNo);
+        if (!runNoIsNumeric) {
+            LOGGER.fatal("Invalid character in Run No. [{}]", runNo);
+            System.exit(1);
+        }
 		
 	}
 	
@@ -94,12 +124,18 @@ public class Main {
 	 * @param customers
 	 * @throws IOException
 	 */
-	private static void loadLookupFiles(ArrayList<Customer> customers) throws IOException {
+	private static void loadLookupFiles(String selRef) throws IOException {
 			
-			AppConfig appConfig = AppConfig.getInstance();
-			
-			SelectorLookup.init(AppConfig.getInstance().getLookupFile());
-			Selector selector = SelectorLookup.getInstance().get(customers.get(0).getSelectorRef());
+			AppConfig appConfig = AppConfig.getInstance();			
+		    SelectorLookup.init(appConfig.getLookupFile());
+		    Selector selector = null;
+		            
+		    if (SelectorLookup.getInstance().isPresent(selRef)) {
+		        selector = SelectorLookup.getInstance().getSelector(selRef);
+		    } else {
+		        LOGGER.fatal("Selector [{}] is not present in the lookupFile.", selRef);
+		        System.exit(1);
+		    }
 						
 			ProductionConfiguration.init(appConfig.getProductionConfigPath() 
 					+ selector.getProductionConfig()
@@ -139,9 +175,6 @@ public class Main {
      * @param docProps
      */
      private static String summaryPrint(ArrayList<Customer> customers) {
-         Map<String, Long> counting = customers.stream().collect(
-                 Collectors.groupingBy(Customer::getFullBatchName, Collectors.counting()));
-
-         return counting.toString();
+         return customers.stream().collect(Collectors.groupingBy(Customer::getFullBatchName, Collectors.counting())).toString();
      }
 }
