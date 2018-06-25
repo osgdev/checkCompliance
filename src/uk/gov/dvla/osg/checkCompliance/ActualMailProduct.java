@@ -39,7 +39,7 @@ public class ActualMailProduct {
                 }
                 customer.setProduct(Product.UNSORTED);
                 break;
-		    case SORTED: case MULTI:
+		    case SORTED:
 		        customer.updateBatchType(BatchType.UNSORTED, PresentationConfiguration.getInstance().lookupRunOrder(BatchType.UNSORTED));
 	            if (customer.getLang().equals(E)) {
 	                customer.setEnvelope(productionConfig.getEnvelopeEnglishUnsorted());
@@ -47,6 +47,19 @@ public class ActualMailProduct {
 	                customer.setEnvelope(productionConfig.getEnvelopeWelshUnsorted());
 	            }
 	            customer.setProduct(Product.UNSORTED);
+                break;
+		    case MULTI:
+		        if (productionConfig.isMultiInUnsorted()) {
+		            customer.updateBatchType(BatchType.UNSORTED, PresentationConfiguration.getInstance().lookupRunOrder(BatchType.UNSORTED));		            
+		        } else {
+		            customer.updateBatchType(BatchType.MULTI, PresentationConfiguration.getInstance().lookupRunOrder(BatchType.MULTI));
+		        }
+                if (customer.getLang().equals(E)) {
+                    customer.setEnvelope(productionConfig.getEnvelopeEnglishUnsorted());
+                } else {
+                    customer.setEnvelope(productionConfig.getEnvelopeWelshUnsorted());
+                }
+                customer.setProduct(Product.UNSORTED);
                 break;
             case UNCODED:
                 if (customer.getLang().equals(E)) {
