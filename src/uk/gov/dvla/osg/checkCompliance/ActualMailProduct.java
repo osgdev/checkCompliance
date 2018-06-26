@@ -49,10 +49,11 @@ public class ActualMailProduct {
 	            customer.setProduct(Product.UNSORTED);
                 break;
 		    case MULTI:
-		        if (productionConfig.isMultiInUnsorted()) {
-		            customer.updateBatchType(BatchType.UNSORTED, PresentationConfiguration.getInstance().lookupRunOrder(BatchType.UNSORTED));		            
-		        } else {
+		        if (productionConfig.isMultiUnsorted()) {
 		            customer.updateBatchType(BatchType.MULTI, PresentationConfiguration.getInstance().lookupRunOrder(BatchType.MULTI));
+		            customer.setMsc("99999");
+		        } else {
+		            customer.updateBatchType(BatchType.UNSORTED, PresentationConfiguration.getInstance().lookupRunOrder(BatchType.UNSORTED));		            
 		        }
                 if (customer.getLang().equals(E)) {
                     customer.setEnvelope(productionConfig.getEnvelopeEnglishUnsorted());
