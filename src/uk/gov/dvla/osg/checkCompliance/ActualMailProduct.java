@@ -49,11 +49,11 @@ public class ActualMailProduct {
 	            customer.setProduct(Product.UNSORTED);
                 break;
 		    case MULTI:
-		        if (productionConfig.isMultiUnsorted()) {
-		            customer.updateBatchType(BatchType.MULTI, PresentationConfiguration.getInstance().lookupRunOrder(BatchType.MULTI));
-		            customer.setMsc("99999");
-		        } else {
-		            customer.updateBatchType(BatchType.UNSORTED, PresentationConfiguration.getInstance().lookupRunOrder(BatchType.UNSORTED));		            
+		        customer.updateBatchType(BatchType.UNSORTED, PresentationConfiguration.getInstance().lookupRunOrder(BatchType.UNSORTED));
+		        // If MultiUnsorted is switched off then set all docs as singles (EOG) else leave the groups as they are
+		        if (!productionConfig.isMultiUnsorted()) {
+		            customer.setEog();
+		            customer.setGroupId(null);
 		        }
                 if (customer.getLang().equals(E)) {
                     customer.setEnvelope(productionConfig.getEnvelopeEnglishUnsorted());
