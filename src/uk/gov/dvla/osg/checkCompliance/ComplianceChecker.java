@@ -1,30 +1,22 @@
 package uk.gov.dvla.osg.checkCompliance;
 
-import static uk.gov.dvla.osg.common.classes.BatchType.*;
+import static uk.gov.dvla.osg.common.enums.BatchType.*;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import uk.gov.dvla.osg.common.classes.BatchType;
 import uk.gov.dvla.osg.common.classes.Customer;
-import uk.gov.dvla.osg.common.classes.Product;
 import uk.gov.dvla.osg.common.config.PostageConfiguration;
 import uk.gov.dvla.osg.common.config.PresentationConfiguration;
 import uk.gov.dvla.osg.common.config.ProductionConfiguration;
+import uk.gov.dvla.osg.common.enums.BatchType;
+import uk.gov.dvla.osg.common.enums.Product;
 
 public class ComplianceChecker {
 	private static final Logger LOGGER = LogManager.getLogger();

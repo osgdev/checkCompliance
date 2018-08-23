@@ -6,12 +6,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import uk.gov.dvla.osg.common.classes.Customer;
-import uk.gov.dvla.osg.common.classes.Language;
-import uk.gov.dvla.osg.common.config.EnvelopeLookup;
-import uk.gov.dvla.osg.common.config.InsertLookup;
-import uk.gov.dvla.osg.common.config.PapersizeLookup;
-import uk.gov.dvla.osg.common.config.ProductionConfiguration;
-import uk.gov.dvla.osg.common.config.StationeryLookup;
+import uk.gov.dvla.osg.common.config.*;
+import uk.gov.dvla.osg.common.enums.Language;
 
 public class CalculateWeightsAndSizes {
 	private static final Logger LOGGER = LogManager.getLogger();
