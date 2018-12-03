@@ -38,6 +38,7 @@ public class ActualMailProduct {
                     customer.setEnvelope(productionConfig.getEnvelopeWelshUnsorted());
                 }
                 customer.setProduct(Product.UNSORTED);
+                customer.setGroupId(null);
                 break;
 		    case SORTED: case MULTI:
 		        customer.updateBatchType(BatchType.UNSORTED, PresentationConfiguration.getInstance().lookupRunOrder(BatchType.UNSORTED));
@@ -47,6 +48,8 @@ public class ActualMailProduct {
 	                customer.setEnvelope(productionConfig.getEnvelopeWelshUnsorted());
 	            }
 	            customer.setProduct(Product.UNSORTED);
+	            customer.setGroupId(null);
+	            customer.setEog();
                 break;
             case UNCODED:
                 if (customer.getLang().equals(E)) {
@@ -55,6 +58,7 @@ public class ActualMailProduct {
                     customer.setEnvelope(productionConfig.getEnvelopeWelshUncoded());
                 }
                 customer.setProduct(Product.UNCODED);
+                customer.setGroupId(null);
                 break;
             case CLERICAL: case FLEET: case REJECT:
                 customer.setEnvelope("");

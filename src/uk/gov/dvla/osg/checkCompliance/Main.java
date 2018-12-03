@@ -39,6 +39,7 @@ public class Main {
             LOGGER.trace("Load DPF records...");
             DpfParser dpf = new DpfParser(inputFile, outputFile);
             ArrayList<Customer> customers = dpf.Load();
+            
             LOGGER.trace("Load lookup files...");
             String selRef = customers.get(0).getSelectorRef();
             loadLookupFiles(selRef);
@@ -61,6 +62,7 @@ public class Main {
             // save to new file
             LOGGER.debug("Saving DPF as {}", outputFile);
             dpf.Save(customers);
+            
             String summary = summaryPrint(customers);
             LOGGER.debug(summary);
         } catch (Exception ex) {

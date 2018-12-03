@@ -12,10 +12,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.univocity.parsers.common.processor.ConcurrentRowProcessor;
 import com.univocity.parsers.common.processor.RowListProcessor;
-import com.univocity.parsers.tsv.TsvParser;
-import com.univocity.parsers.tsv.TsvParserSettings;
-import com.univocity.parsers.tsv.TsvWriter;
-import com.univocity.parsers.tsv.TsvWriterSettings;
+import com.univocity.parsers.tsv.*;
 
 import uk.gov.dvla.osg.common.classes.Customer;
 import uk.gov.dvla.osg.common.config.InsertLookup;
@@ -120,6 +117,13 @@ public class DpfParser {
 					LOGGER.fatal("Site Field {}", appConfig.getSiteField());
 				}
 				
+                try {
+                    String id = customer.getGroupId() == null ? "" : Integer.toString(customer.getGroupId());
+                    writer.addValue(appConfig.getGroupIdField(), id);
+                } catch (Exception ex) {
+                    LOGGER.fatal("Group ID Field {}", appConfig.getGroupIdField());
+                }
+                
 				try {
 					writer.addValue(appConfig.getEogField(), customer.getEog());
 				} catch (Exception ex) {
