@@ -36,6 +36,9 @@ public class Main {
             // Load files
             LOGGER.trace("Load config file...");
             AppConfig.init(propsFile);
+            AppConfig appConfig = AppConfig.getInstance();
+            String mailmarkCompliancePath = appConfig.getMailmarkCompliancePath();
+            
             LOGGER.trace("Load DPF records...");
             DpfParser dpf = new DpfParser(inputFile, outputFile);
             ArrayList<Customer> customers = dpf.Load();
@@ -52,7 +55,7 @@ public class Main {
             cc.checkMscGroups();
             cc.calculateDPSCompliance();
             cc.calculateActualMailProduct();
-            cc.writeComplianceReportFile(AppConfig.getInstance().getMailmarkCompliancePath());
+            cc.writeComplianceReportFile(mailmarkCompliancePath);
 
             // Check weights and sizes
             LOGGER.trace("Calculating Weights & Sizes...");
@@ -121,21 +124,21 @@ public class Main {
 
         AppConfig appConfig = AppConfig.getInstance();
         SelectorLookup.init(appConfig.getLookupFile());
-        Selector selector = null;
 
-        if (SelectorLookup.getInstance().isPresent(selRef)) {
-            selector = SelectorLookup.getInstance().getSelector(selRef);
-            ProductionConfiguration.init(appConfig.getProductionConfigPath() + selector.getProductionConfig() + appConfig.getProductionFileSuffix());
-            PostageConfiguration.init(appConfig.getPostageConfigPath() + selector.getPostageConfig() + appConfig.getPostageFileSuffix());
-            PresentationConfiguration.init(appConfig.getPresentationPriorityConfigPath() + selector.getPresentationConfig() + appConfig.getPresentationPriorityFileSuffix());
-            InsertLookup.init(appConfig.getInsertLookup());
-            StationeryLookup.init(appConfig.getStationeryLookup());
-            EnvelopeLookup.init(appConfig.getEnvelopeLookup());
-            PapersizeLookup.init(appConfig.getPapersizeLookup());
-        } else {
+        if (!SelectorLookup.getInstance().isPresent(selRef)) {
             LOGGER.fatal("Selector [{}] is not present in the lookupFile.", selRef);
             System.exit(1);
         }
+        
+        Selector selector = SelectorLookup.getInstance().getSelector(selRef);
+        ProductionConfiguration.init(appConfig.getProductionConfigPath() + selector.getProductionConfig() + appConfig.getProductionFileSuffix());
+        PostageConfiguration.init(appConfig.getPostageConfigPath() + selector.getPostageConfig() + appConfig.getPostageFileSuffix());
+        PresentationConfiguration.init(appConfig.getPresentationPriorityConfigPath() + selector.getPresentationConfig() + appConfig.getPresentationPriorityFileSuffix());
+        InsertLookup.init(appConfig.getInsertLookup());
+        StationeryLookup.init(appConfig.getStationeryLookup());
+        EnvelopeLookup.init(appConfig.getEnvelopeLookup());
+        PapersizeLookup.init(appConfig.getPapersizeLookup());
+        
     }
 
     /**
