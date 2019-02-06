@@ -82,10 +82,11 @@ public class ComplianceChecker {
 			if (mscsToAdjust.size() > 0) {
 				LOGGER.info("Adjusting {} mscs", mscsToAdjust.size());
 				customers.forEach(cus -> {
-					if (mscsToAdjust.contains(
-							cus.getLang().name() + cus.getBatchType().name() + cus.getSubBatch() + cus.getMsc())) {
+					if (mscsToAdjust.contains(cus.getLang().name() + cus.getBatchType().name() + cus.getSubBatch() + cus.getMsc())) {
 						cus.updateBatchType(UNSORTED, presentationConfig.lookupRunOrder(UNSORTED));
-						cus.setEog();
+						// Switch Multis to singles when set in production config
+						cus.setTotalPagesInGroup(cus.getNoOfPages());
+		                cus.setEog();
 					}
 				});
 			}
@@ -107,7 +108,7 @@ public class ComplianceChecker {
 			});
 			
 			int percentage = 100 - ukmMinimumCompliance;
-			maxBadDps = (((double) goodDpsCount / 100) * (double) percentage) - 1;
+			maxBadDps = (((double) goodDpsCount / 100) * percentage) - 1;
 			compliance = 100 - (((double) badDpsCount / (double) goodDpsCount) * 100);
 			LOGGER.info(
 					"Run total={}, total mailsort count={}, \n\tgood DPS count={}, bad DPS count={}, \n\tmaximum permitted default DPS={}, compliance level={} minimum compliance set to {}",
