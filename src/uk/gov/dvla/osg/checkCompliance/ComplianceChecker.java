@@ -84,9 +84,12 @@ public class ComplianceChecker {
 				customers.forEach(cus -> {
 					if (mscsToAdjust.contains(cus.getLang().name() + cus.getBatchType().name() + cus.getSubBatch() + cus.getMsc())) {
 						cus.updateBatchType(UNSORTED, presentationConfig.lookupRunOrder(UNSORTED));
-						// Switch Multis to singles when set in production config
-						cus.setTotalPagesInGroup(cus.getNoOfPages());
-		                cus.setEog();
+						// PB 19/02/19 : Switch Multis to singles when set in production config, otherwise leave as MULTIs
+						if (!prodConfig.isMultiUnsorted()) {
+						    cus.setGroupId(null);
+						    cus.setTotalPagesInGroup(cus.getNoOfPages());
+						    cus.setEog();
+						}
 					}
 				});
 			}

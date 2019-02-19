@@ -75,7 +75,7 @@ public class DpfParser {
 			
 			customer.setDps(record.getString(appConfig.getDpsField()));
 			customer.setInsertRef(record.getString(appConfig.getInsertField()));
-			customer.setMmCustomerContent(record.getString(appConfig.getMailMarkBarcodeCustomerContent()));
+			customer.setCustomerContent(record.getString(appConfig.getMailMarkBarcodeCustomerContent()));
 			customer.setNoOfPages(record.getInt(appConfig.getNoOfPagesField()));
 			customer.setSot(record.getString(appConfig.getSotField()));
 			customer.setEog(record.getString(appConfig.getEogField()));
