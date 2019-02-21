@@ -5,6 +5,9 @@ import static uk.gov.dvla.osg.common.enums.Language.*;
 
 import java.util.ArrayList;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import uk.gov.dvla.osg.common.classes.Customer;
 import uk.gov.dvla.osg.common.config.PostageConfiguration;
 import uk.gov.dvla.osg.common.config.PresentationConfiguration;
@@ -13,6 +16,9 @@ import uk.gov.dvla.osg.common.enums.BatchType;
 import uk.gov.dvla.osg.common.enums.Product;
 
 public class ActualMailProduct {
+    
+    static final Logger LOGGER = LogManager.getLogger();
+    
 	// Input variables
 	ArrayList<Customer> customers;
 	PostageConfiguration postageConfig;
@@ -38,9 +44,8 @@ public class ActualMailProduct {
                     customer.setEnvelope(productionConfig.getEnvelopeWelshUnsorted());
                 }
                 customer.setProduct(Product.UNSORTED);
-                customer.setGroupId(null);
                 break;
-		    case SORTED: case MULTI:
+		    case SORTED:
 		        customer.updateBatchType(BatchType.UNSORTED, PresentationConfiguration.getInstance().lookupRunOrder(BatchType.UNSORTED));
 	            if (customer.getLang().equals(E)) {
 	                customer.setEnvelope(productionConfig.getEnvelopeEnglishUnsorted());
@@ -51,6 +56,21 @@ public class ActualMailProduct {
 	            customer.setGroupId(null);
 	            customer.setEog();
                 break;
+		    case MULTI:
+	              customer.updateBatchType(BatchType.UNSORTED, PresentationConfiguration.getInstance().lookupRunOrder(BatchType.UNSORTED));
+	                if (customer.getLang().equals(E)) {
+	                    customer.setEnvelope(productionConfig.getEnvelopeEnglishUnsorted());
+	                } else {
+	                    customer.setEnvelope(productionConfig.getEnvelopeWelshUnsorted());
+	                }
+	                customer.setProduct(Product.UNSORTED);
+                    // PB 19/02/19 : Switch Multis to singles when set in production config, otherwise leave as MULTIs
+                    if (!productionConfig.isMultiUnsorted()) {
+                        customer.setGroupId(null);
+                        customer.setEog();
+                        customer.setTotalPagesInGroup(customer.getNoOfPages());
+                    }
+	                break;
             case UNCODED:
                 if (customer.getLang().equals(E)) {
                     customer.setEnvelope(productionConfig.getEnvelopeEnglishUncoded());
@@ -77,13 +97,21 @@ public class ActualMailProduct {
 		customers.forEach(customer -> {
 			//SET FINAL ENVELOPE
 			switch (customer.getBatchType()) {
-			case SORTED: case MULTI:
+			case SORTED: 
+                if (customer.getLang().equals(E)) {
+                    customer.setEnvelope(productionConfig.getEnvelopeEnglishOcr());
+                } else {
+                    customer.setEnvelope(productionConfig.getEnvelopeWelshOcr());
+                }
+                customer.setProduct(Product.OCR);
+                break;			    
+			case MULTI:
 				if (customer.getLang().equals(E)) {
 					customer.setEnvelope(productionConfig.getEnvelopeEnglishOcr());
 				} else {
 					customer.setEnvelope(productionConfig.getEnvelopeWelshOcr());
 				}
-				customer.setProduct(actualMailProduct);
+				customer.setProduct(Product.OCR);
 				break;
 			case UNSORTED:
 				if (customer.getLang().equals(E)) {
@@ -121,7 +149,7 @@ public class ActualMailProduct {
 				} else {
 					customer.setEnvelope(productionConfig.getEnvelopeWelshOcr());
 				}
-				customer.setProduct(actualMailProduct);
+				customer.setProduct(Product.OCR);
 				break;
 			case UNSORTED:
 				if (customer.getLang().equals(E)) {
@@ -165,7 +193,7 @@ public class ActualMailProduct {
 				} else {
 					customer.setEnvelope(productionConfig.getEnvelopeWelshMm());
 				}
-				customer.setProduct(actualMailProduct);
+				customer.setProduct(Product.MM);
 				break;
 			case UNSORTED:
 				if (customer.getLang().equals(E)) {

@@ -98,13 +98,12 @@ public class CalculateWeightsAndSizes {
     private void calcPaper(Customer customer) {
         int divisor = 0;
         int foldMultiplier = 0;
-
+        
         if (paperSizeLookup.containsKey(customer.getPaperSize())) {
             divisor = (int) paperSizeLookup.get(customer.getPaperSize()).getMultiplier();
         }
 
         double thickness = stationeryLookup.getStationery(customer.getStationery()).getThickness();
-
         // Added E/W, MP - 04/04
         if (customer.getLang().equals(Language.E)) {
             // Could change to customer.getEnvelope() as it is set previously - MP, 04/04
@@ -118,7 +117,6 @@ public class CalculateWeightsAndSizes {
         } else {
             paperSize = thickness * foldMultiplier * customer.getNoOfPages();
         }
-
         paperWeight = stationeryLookup.getStationery(customer.getStationery()).getWeight() * customer.getNoOfPages();
     }
 

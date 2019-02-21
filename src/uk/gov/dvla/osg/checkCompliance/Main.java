@@ -5,7 +5,6 @@ import static org.apache.commons.lang3.StringUtils.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -14,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 
 import uk.gov.dvla.osg.common.classes.Customer;
 import uk.gov.dvla.osg.common.classes.Selector;
+import uk.gov.dvla.osg.common.classes.Utils;
 import uk.gov.dvla.osg.common.config.*;
 
 public class Main {
@@ -39,7 +39,9 @@ public class Main {
             LOGGER.trace("Load DPF records...");
             DpfParser dpf = new DpfParser(inputFile, outputFile);
             ArrayList<Customer> customers = dpf.Load();
-            
+            // Summary Print to check batch volumes before and after
+            String summaryBefore = Utils.summaryPrint(customers);
+            LOGGER.info(summaryBefore);
             LOGGER.trace("Load lookup files...");
             String selRef = customers.get(0).getSelectorRef();
             loadLookupFiles(selRef);
@@ -58,13 +60,12 @@ public class Main {
             LOGGER.trace("Calculating Weights & Sizes...");
             CalculateWeightsAndSizes cws = new CalculateWeightsAndSizes(customers);
             cws.calculate();
-
             // save to new file
             LOGGER.debug("Saving DPF as {}", outputFile);
             dpf.Save(customers);
-            
-            String summary = summaryPrint(customers);
-            LOGGER.debug(summary);
+            // Summary Print to check batch volumes before and after
+            String summaryAfter = Utils.summaryPrint(customers);
+            LOGGER.info(summaryAfter);
         } catch (Exception ex) {
             LOGGER.fatal(ExceptionUtils.getStackTrace(ex));
             System.exit(1);
@@ -154,12 +155,4 @@ public class Main {
         });
     }
 
-    /**
-     * Prints a summary of the number of items for each batch type.
-     * 
-     * @param docProps
-     */
-    private static String summaryPrint(ArrayList<Customer> customers) {
-        return customers.stream().collect(Collectors.groupingBy(Customer::getFullBatchName, Collectors.counting())).toString();
-    }
 }
