@@ -107,7 +107,7 @@ public class ComplianceChecker {
     public void calculateDPSCompliance() {
         if (!mailsortProduct.equals(Product.UNSORTED)) {
             customers.forEach(cus -> {
-                if (batchTypesToUkm.contains(cus.getBatchType())) {
+                if (batchTypesToUkm.contains(cus.getBatchType()) && StringUtils.isNotBlank(cus.getMsc())) {
                     totalMailsortCount++;
                     if (StringUtils.isEmpty(cus.getDps()) || cus.getDps().equals("9Z")) {
                         badDpsCount++;
